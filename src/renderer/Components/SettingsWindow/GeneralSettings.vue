@@ -1,14 +1,14 @@
 <template>
-    <SettingList title="General settings"></SettingList>
+    <USettingList title="General settings"></USettingList>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { SettingList } from "ueli-designsystem";
+import { USettingList } from "ueli-designsystem";
 
 export default defineComponent({
     components: {
-        SettingList,
+        USettingList,
     },
 });
 </script>

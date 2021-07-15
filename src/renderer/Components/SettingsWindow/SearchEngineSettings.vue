@@ -1,10 +1,10 @@
 <template>
-    <SettingList title="Search Engine Settings">
+    <USettingList title="Search Engine Settings">
         <template v-slot:settings>
-            <Setting class="setting">
+            <USetting class="setting">
                 <template v-slot:label>Fuzzyness</template>
                 <template v-slot:body>
-                    <SliderInput
+                    <USliderInput
                         :min="0"
                         :max="1"
                         :step="0.1"
@@ -13,19 +13,19 @@
                         @valueChanged="thresholdChanged"
                     />
                 </template>
-            </Setting>
+            </USetting>
 
-            <Setting class="setting">
+            <USetting class="setting">
                 <template v-slot:label> Automatic rescan interval </template>
                 <template v-slot:body>
-                    <NumberInput
+                    <UNumberInput
                         :value="settings.searchEngineSettings.automaticRescanIntervalInSeconds"
                         @changed="rescanIntervalChanged"
                     />
                 </template>
-            </Setting>
+            </USetting>
         </template>
-    </SettingList>
+    </USettingList>
 </template>
 
 <script lang="ts">
@@ -37,7 +37,7 @@ import { NotificationData } from "../../NotificationData";
 import { NotificationType } from "../../NotificationType";
 import { VueEvent } from "../../VueEvent";
 import { vueEventEmitter } from "../../VueEventEmitter";
-import { NumberInput, SliderInput, Setting, SettingList } from "ueli-designsystem";
+import { UNumberInput, USliderInput, USetting, USettingList } from "ueli-designsystem";
 
 interface Data {
     settings: Settings;
@@ -45,10 +45,10 @@ interface Data {
 
 export default defineComponent({
     components: {
-        NumberInput,
-        Setting,
-        SettingList,
-        SliderInput,
+        UNumberInput,
+        USetting,
+        USettingList,
+        USliderInput,
     },
 
     data(): Data {
