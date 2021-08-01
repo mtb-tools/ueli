@@ -36,7 +36,7 @@ export default defineComponent({
 
     methods: {
         focusOnUserInput(): void {
-            const $userInput = this.$refs.userInput as HTMLInputElement;
+            const $userInput = <HTMLInputElement>this.$refs.userInput;
             $userInput.focus();
         },
 

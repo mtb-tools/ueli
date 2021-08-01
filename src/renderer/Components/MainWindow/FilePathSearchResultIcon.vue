@@ -11,7 +11,7 @@ import { LocalFilePathSearchResultItemIcon } from "../../../common/SearchResult/
 export default defineComponent({
     props: {
         icon: {
-            type: Object as PropType<LocalFilePathSearchResultItemIcon>,
+            type: <PropType<LocalFilePathSearchResultItemIcon>>Object,
             required: true,
         },
     },

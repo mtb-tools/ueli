@@ -15,7 +15,7 @@ import DataUrlSearchResultIcon from "./DataUrlSearchResultIcon.vue";
 export default defineComponent({
     props: {
         icon: {
-            type: Object as PropType<SearchResultItemIcon>,
+            type: <PropType<SearchResultItemIcon>>Object,
             required: true,
         },
     },

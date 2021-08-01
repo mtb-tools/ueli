@@ -7,7 +7,7 @@ const bridge: Bridge = {
         send: <ArgumentType>(channel: IpcChannel, ...arg: ArgumentType[]) => ipcRenderer.send(channel.toString(), arg),
 
         sendSync: <ArgumentType, ReturnType>(channel: IpcChannel, ...arg: ArgumentType[]) =>
-            ipcRenderer.sendSync(channel.toString(), arg) as ReturnType,
+            <ReturnType>ipcRenderer.sendSync(channel.toString(), arg),
 
         on: <ArgumentType>(channel: IpcChannel, listener: (event: IpcRendererEvent, ...args: ArgumentType[]) => void) =>
             ipcRenderer.on(channel.toString(), listener),
@@ -17,9 +17,8 @@ const bridge: Bridge = {
             listener: (event: IpcRendererEvent, ...args: ArgumentType[]) => void
         ) => ipcRenderer.once(channel.toString(), listener),
 
-        invoke: <ArgumentType, ReturnType>(command: IpcChannel, ...arg: ArgumentType[]) => {
-            return ipcRenderer.invoke(command, arg) as Promise<ReturnType>;
-        },
+        invoke: <ArgumentType, ReturnType>(command: IpcChannel, ...arg: ArgumentType[]) =>
+            <Promise<ReturnType>>ipcRenderer.invoke(command, arg),
     },
 };
 

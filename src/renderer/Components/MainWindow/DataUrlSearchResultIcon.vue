@@ -11,7 +11,7 @@ import { DataUrlSearchResultItemIcon } from "../../../common/SearchResult/DataUr
 export default defineComponent({
     props: {
         icon: {
-            type: Object as PropType<DataUrlSearchResultItemIcon>,
+            type: <PropType<DataUrlSearchResultItemIcon>>Object,
             required: true,
         },
     },

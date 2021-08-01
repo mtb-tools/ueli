@@ -32,7 +32,7 @@ export default defineComponent({
 
     props: {
         optionGroup: {
-            type: Object as PropType<SidebarOptionGroup>,
+            type: <PropType<SidebarOptionGroup>>Object,
             required: true,
         },
     },

@@ -52,7 +52,7 @@ export default defineComponent({
 
     props: {
         item: {
-            type: Object as PropType<SearchResultItem>,
+            type: <PropType<SearchResultItem>>Object,
             required: true,
         },
 

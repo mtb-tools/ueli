@@ -11,6 +11,7 @@ import { TestLogger } from "../../common/Logger/TestLogger";
 describe(SearchEngine, () => {
     const tempFolderPath = join(__dirname, "temp");
     const searchEngineSettings: SearchEngineSettings = {
+        automaticRescanEnabled: false,
         automaticRescanIntervalInSeconds: 0,
         threshold: 0.4,
     };
@@ -106,7 +107,7 @@ describe(SearchEngine, () => {
         it("should support fuzzy search if threshold is high enough", async () => {
             const onGetAllSearchables = jest.fn(() => searchables);
             const searchEngine = new SearchEngine(
-                { threshold: 0.6, automaticRescanIntervalInSeconds: 0 },
+                { threshold: 0.6, automaticRescanIntervalInSeconds: 0, automaticRescanEnabled: false },
                 [new DummySearchPlugin(tempFolderPath, onGetAllSearchables)],
                 logger
             );
@@ -119,7 +120,7 @@ describe(SearchEngine, () => {
         it("should not supporty fuzzy search if threshold is 0", async () => {
             const onGetAllSearchables = jest.fn(() => searchables);
             const searchEngine = new SearchEngine(
-                { threshold: 0, automaticRescanIntervalInSeconds: 0 },
+                { threshold: 0, automaticRescanIntervalInSeconds: 0, automaticRescanEnabled: false },
                 [new DummySearchPlugin(tempFolderPath, onGetAllSearchables)],
                 logger
             );

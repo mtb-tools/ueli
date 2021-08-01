@@ -16,6 +16,16 @@
             </USetting>
 
             <USetting class="setting">
+                <template v-slot:label>Automatic rescan</template>
+                <template v-slot:body>
+                    <UToggle
+                        :toggled="settings.searchEngineSettings.automaticRescanEnabled"
+                        @toggle="toggleAutomaticRescanEnabled"
+                    />
+                </template>
+            </USetting>
+
+            <USetting class="setting" v-if="settings.searchEngineSettings.automaticRescanEnabled">
                 <template v-slot:label> Automatic rescan interval </template>
                 <template v-slot:body>
                     <UNumberInput
@@ -37,7 +47,7 @@ import { NotificationData } from "../../NotificationData";
 import { NotificationType } from "../../NotificationType";
 import { VueEvent } from "../../VueEvent";
 import { vueEventEmitter } from "../../VueEventEmitter";
-import { UNumberInput, USliderInput, USetting, USettingList } from "ueli-designsystem";
+import { UNumberInput, USliderInput, USetting, USettingList, UToggle } from "ueli-designsystem";
 
 interface Data {
     settings: Settings;
@@ -49,6 +59,7 @@ export default defineComponent({
         USetting,
         USettingList,
         USliderInput,
+        UToggle,
     },
 
     data(): Data {
@@ -58,8 +69,9 @@ export default defineComponent({
     },
 
     methods: {
-        async thresholdChanged(threshold: number) {
+        async thresholdChanged(threshold: number): Promise<void> {
             this.settings.searchEngineSettings.threshold = threshold;
+
             try {
                 await this.saveSettings();
                 vueEventEmitter.emit(VueEvent.Notification, this.successfullySavedSettingsNotification());
@@ -68,8 +80,21 @@ export default defineComponent({
             }
         },
 
-        async rescanIntervalChanged(interval: number) {
+        async rescanIntervalChanged(interval: number): Promise<void> {
             this.settings.searchEngineSettings.automaticRescanIntervalInSeconds = interval;
+
+            try {
+                await this.saveSettings();
+                vueEventEmitter.emit(VueEvent.Notification, this.successfullySavedSettingsNotification());
+            } catch (error) {
+                vueEventEmitter.emit(VueEvent.Notification, this.failedToSaveSettingsNotification(error));
+            }
+        },
+
+        async toggleAutomaticRescanEnabled(): Promise<void> {
+            this.settings.searchEngineSettings.automaticRescanEnabled =
+                !this.settings.searchEngineSettings.automaticRescanEnabled;
+
             try {
                 await this.saveSettings();
                 vueEventEmitter.emit(VueEvent.Notification, this.successfullySavedSettingsNotification());

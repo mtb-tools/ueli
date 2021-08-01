@@ -104,7 +104,7 @@ export class WindowsApplicationSearchPlugin extends SearchPlugin<WindowsApplicat
     public async rescan(): Promise<void> {
         const settings = await this.getSettings();
         const stdout = await this.executePowershellScript(this.getPowershellScript(settings));
-        const apps = JSON.parse(stdout) as WindowsApplicationRetrieverResult[];
+        const apps = <WindowsApplicationRetrieverResult[]>JSON.parse(stdout);
         this.applications = apps.map((app) => WindowsApplication.fromWindowsAppRetriever(app));
     }
 

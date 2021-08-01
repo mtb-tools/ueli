@@ -39,7 +39,7 @@ export default defineComponent({
 
     props: {
         searchResultItems: {
-            type: Array as PropType<SearchResultItem[]>,
+            type: <PropType<SearchResultItem[]>>Array,
             required: true,
         },
     },
@@ -88,9 +88,9 @@ export default defineComponent({
                 | HTMLDivElement
                 | undefined;
 
-            const currentlySelectedElement = document.getElementById(
-                `search-result-position-${this.currentlyHoveredPosition}`
-            ) as HTMLDivElement | undefined;
+            const currentlySelectedElement = <HTMLDivElement | undefined>(
+                document.getElementById(`search-result-position-${this.currentlyHoveredPosition}`)
+            );
 
             if (searchResultListContainer && currentlySelectedElement) {
                 if (this.elementIsOutOfView(searchResultListContainer, currentlySelectedElement)) {

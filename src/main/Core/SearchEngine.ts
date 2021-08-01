@@ -56,7 +56,7 @@ export class SearchEngine {
             this.handleError(new SearchEngineRescanError(error));
         } finally {
             this.rescanPromise = undefined;
-            if (this.settings.automaticRescanIntervalInSeconds) {
+            if (this.settings.automaticRescanEnabled && this.settings.automaticRescanIntervalInSeconds) {
                 this.scheduleRescan(this.settings.automaticRescanIntervalInSeconds);
             }
         }
@@ -68,7 +68,7 @@ export class SearchEngine {
 
     public cancelScheduledRescan(): void {
         if (this.scheduledRescanTimeout) {
-            clearTimeout(this.scheduledRescanTimeout as number);
+            clearTimeout(<number>this.scheduledRescanTimeout);
             this.logger.info("Scheduled rescan cancelled");
         }
     }
@@ -87,12 +87,16 @@ export class SearchEngine {
 
     public updateSettings(updatedSettings: SearchEngineSettings): void {
         if (
-            SearchEngine.rescanOptionChanged(
+            SearchEngine.rescanOptionChanged<number>(
                 updatedSettings.automaticRescanIntervalInSeconds,
                 this.settings.automaticRescanIntervalInSeconds
+            ) ||
+            SearchEngine.rescanOptionChanged<boolean>(
+                updatedSettings.automaticRescanEnabled,
+                this.settings.automaticRescanEnabled
             )
         ) {
-            if (updatedSettings.automaticRescanIntervalInSeconds) {
+            if (updatedSettings.automaticRescanEnabled && updatedSettings.automaticRescanIntervalInSeconds) {
                 this.rescan();
             } else {
                 this.cancelScheduledRescan();
@@ -125,7 +129,7 @@ export class SearchEngine {
         this.logger.error(`Handled error: ${error.message}`);
     }
 
-    private static rescanOptionChanged(newValue: number, currentValue: number): boolean {
+    private static rescanOptionChanged<T>(newValue: T, currentValue: T): boolean {
         return newValue !== currentValue;
     }
 }

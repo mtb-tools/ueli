@@ -5233,7 +5233,7 @@ typescript@^4.3.4:
 
 "ueli-designsystem@https://github.com/oliverschwendener/ueli-designsystem":
   version "0.0.0"
-  resolved "https://github.com/oliverschwendener/ueli-designsystem#ec98c5d69ba7e0e85e136192b433c7683c0d019b"
+  resolved "https://github.com/oliverschwendener/ueli-designsystem#838eb60d7b57b3f00fe34311dc32456f9f6ed876"
   dependencies:
     bootstrap-icons "^1.5.0"
     vue "^3.1.4"
