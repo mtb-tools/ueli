@@ -45,7 +45,6 @@ import { ObjectUtility } from "../../../common/ObjectUtility";
 import { Settings } from "../../../common/Settings";
 import { NotificationData } from "../../NotificationData";
 import { NotificationType } from "../../NotificationType";
-import { VueEvent } from "../../VueEvent";
 import { vueEventEmitter } from "../../VueEventEmitter";
 import { UNumberInput, USliderInput, USetting, USettingList, UToggle } from "ueli-designsystem";
 
@@ -74,9 +73,9 @@ export default defineComponent({
 
             try {
                 await this.saveSettings();
-                vueEventEmitter.emit(VueEvent.Notification, this.successfullySavedSettingsNotification());
+                vueEventEmitter.emit("Notification", this.successfullySavedSettingsNotification());
             } catch (error) {
-                vueEventEmitter.emit(VueEvent.Notification, this.failedToSaveSettingsNotification(error));
+                vueEventEmitter.emit("Notification", this.failedToSaveSettingsNotification(error));
             }
         },
 
@@ -85,9 +84,9 @@ export default defineComponent({
 
             try {
                 await this.saveSettings();
-                vueEventEmitter.emit(VueEvent.Notification, this.successfullySavedSettingsNotification());
+                vueEventEmitter.emit("Notification", this.successfullySavedSettingsNotification());
             } catch (error) {
-                vueEventEmitter.emit(VueEvent.Notification, this.failedToSaveSettingsNotification(error));
+                vueEventEmitter.emit("Notification", this.failedToSaveSettingsNotification(error));
             }
         },
 
@@ -97,9 +96,9 @@ export default defineComponent({
 
             try {
                 await this.saveSettings();
-                vueEventEmitter.emit(VueEvent.Notification, this.successfullySavedSettingsNotification());
+                vueEventEmitter.emit("Notification", this.successfullySavedSettingsNotification());
             } catch (error) {
-                vueEventEmitter.emit(VueEvent.Notification, this.failedToSaveSettingsNotification(error));
+                vueEventEmitter.emit("Notification", this.failedToSaveSettingsNotification(error));
             }
         },
 

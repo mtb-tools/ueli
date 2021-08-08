@@ -19,7 +19,6 @@ import { defineComponent, PropType } from "vue";
 import SearchResult from "./SearchResult.vue";
 import { SearchResultItem } from "../../../common/SearchResult/SearchResultItem";
 import { vueEventEmitter } from "../../VueEventEmitter";
-import { VueEvent } from "../../VueEvent";
 import { ObjectUtility } from "../../../common/ObjectUtility";
 
 interface Data {
@@ -123,13 +122,11 @@ export default defineComponent({
     },
 
     mounted(): void {
-        vueEventEmitter.on(VueEvent.UserInputArrowKeyPressed, (key?: "ArrowUp" | "ArrowDown") => {
-            if (key) {
-                this.currentlySelectedIndexChange(key);
-            }
+        vueEventEmitter.on("UserInputArrowKeyPressed", (key) => {
+            this.currentlySelectedIndexChange(key);
         });
 
-        vueEventEmitter.on(VueEvent.UserInputEnterPressed, (ctrlOrMetaPressed?: boolean) => {
+        vueEventEmitter.on("UserInputEnterPressed", (ctrlOrMetaPressed?: boolean) => {
             const currentlySelectedItem = this.searchResultItems.find(
                 (searchResultItem, index) => index === this.currentlyHoveredPosition
             );

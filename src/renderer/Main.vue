@@ -18,7 +18,6 @@ import { defineComponent } from "vue";
 import UserInput from "./Components/MainWindow/UserInput.vue";
 import SearchResultList from "./Components/MainWindow/SearchResultList.vue";
 import { vueEventEmitter } from "./VueEventEmitter";
-import { VueEvent } from "./VueEvent";
 import { SearchResultItem } from "../common/SearchResult/SearchResultItem";
 import { IpcChannel } from "../common/IpcChannel";
 
@@ -47,15 +46,12 @@ export default defineComponent({
                 case "ArrowUp":
                 case "ArrowDown":
                     keyboardEvent.preventDefault();
-                    vueEventEmitter.emit(VueEvent.UserInputArrowKeyPressed, keyboardEvent.key);
+                    vueEventEmitter.emit("UserInputArrowKeyPressed", keyboardEvent.key);
                     break;
 
                 case "Enter":
                     keyboardEvent.preventDefault();
-                    vueEventEmitter.emit(
-                        VueEvent.UserInputEnterPressed,
-                        keyboardEvent.ctrlKey || keyboardEvent.metaKey
-                    );
+                    vueEventEmitter.emit("UserInputEnterPressed", keyboardEvent.ctrlKey || keyboardEvent.metaKey);
                     break;
 
                 case "Escape":
@@ -93,17 +89,11 @@ export default defineComponent({
         },
 
         registerIpcEventListeners(): void {
-            this.Bridge.ipcRenderer.on(IpcChannel.MainWindowShown, () => {
-                vueEventEmitter.emit(VueEvent.MainWindowShown);
-            });
+            this.Bridge.ipcRenderer.on(IpcChannel.MainWindowShown, () => vueEventEmitter.emit("MainWindowShown"));
         },
 
         registerVueEventListeners(): void {
-            vueEventEmitter.on(VueEvent.GlobalKeyDown, (event?: KeyboardEvent) => {
-                if (event) {
-                    this.onGlobalKeyDown(event);
-                }
-            });
+            vueEventEmitter.on("GlobalKeyDown", (event: KeyboardEvent) => this.onGlobalKeyDown(event));
         },
 
         handleError(error: Error): void {

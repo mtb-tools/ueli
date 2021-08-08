@@ -15,7 +15,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { NotificationData } from "../../NotificationData";
-import { VueEvent } from "../../VueEvent";
 import { vueEventEmitter } from "../../VueEventEmitter";
 import { UNotification } from "ueli-designsystem";
 
@@ -53,7 +52,7 @@ export default defineComponent({
     },
 
     mounted() {
-        vueEventEmitter.on(VueEvent.Notification, (notification?: NotificationData) => {
+        vueEventEmitter.on("Notification", (notification?: NotificationData) => {
             if (!notification) {
                 return;
             }
