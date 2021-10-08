@@ -8,7 +8,7 @@ function Extract-Shortcut {
         $TargetPath = $Shell.CreateShortcut($ShortcutFilePath).TargetPath
         $TargetPathAccessible = Test-Path -Path $TargetPath -PathType Leaf
         if ($TargetPathAccessible) {
-            return $TargetPath;
+            return $TargetPath
         }
         else {
             return $ShortcutFilePath
