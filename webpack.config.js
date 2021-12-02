@@ -1,63 +1,78 @@
 const path = require("path");
 
+const distributionDirectoryPath = path.join(__dirname, "bundle");
+
 const mode = process.env.NODE_ENV === "production" ? "production" : "development";
-const devtool = process.env.NODE_ENV === "production" ? undefined : "source-map";
 
-console.log(`Using "${mode}" mode for webpack bundles`);
+console.log(`Mode: ${mode}`);
 
-const mainConfig = {
-    entry: path.join(__dirname, "src", "main", "main.ts"),
-    output: {
-        filename: "[name].js",
-        path: path.join(__dirname, "bundle"),
-    },
+const entryPoints = {
+    main: path.join(__dirname, "src", "main", "Main.ts"),
+    preload: path.join(__dirname, "src", "shared", "Preload.ts"),
+    renderer: path.join(__dirname, "src", "renderer", "Renderer.tsx"),
+};
+
+const outputFiles = {
+    main: "Main.js",
+    preload: "Preload.js",
+    renderer: "Renderer.js",
+};
+
+const targets = {
+    main: "electron-main",
+    preload: "electron-preload",
+    renderer: "electron-renderer",
+};
+
+const baseConfig = {
     module: {
         rules: [
             {
                 test: /\.tsx?$/,
-                loader: "ts-loader",
+                use: {
+                    loader: "babel-loader",
+                    options: {
+                        configFile: path.join(__dirname, ".babelrc"),
+                    },
+                },
             },
         ],
     },
     resolve: {
-        extensions: [".ts", ".js"],
+        extensions: [".ts", ".tsx", ".js", ".jsx"],
     },
     mode,
-    target: "electron-main",
-    node: false,
-    devtool,
-    externals: {
-        sqlite3: "commonjs sqlite3",
+};
+
+const mainConfig = {
+    entry: entryPoints.main,
+    output: {
+        filename: outputFiles.main,
+        path: distributionDirectoryPath,
     },
+    target: targets.main,
+};
+
+const preloadConfig = {
+    entry: entryPoints.preload,
+    output: {
+        filename: outputFiles.preload,
+        path: distributionDirectoryPath,
+    },
+    target: targets.preload,
 };
 
 const rendererConfig = {
-    entry: path.join(__dirname, "src", "renderer", "renderer.ts"),
+    entry: entryPoints.renderer,
     output: {
-        filename: "renderer.js",
-        path: path.join(__dirname, "bundle"),
+        filename: outputFiles.renderer,
+        path: distributionDirectoryPath,
     },
-    module: {
-        rules: [
-            {
-                test: /\.tsx?$/,
-                loader: "ts-loader",
-            },
-        ],
-    },
-    resolve: {
-        alias: {
-            vue$: "vue/dist/vue.esm.js",
-        },
-        extensions: [".ts", ".js"],
-    },
-    mode,
-    target: "electron-renderer",
-    node: false,
-    devtool,
-    externals: {
-        sqlite3: "commonjs sqlite3",
-    },
+    target: targets.renderer,
 };
 
-module.exports = [mainConfig, rendererConfig];
+module.exports = [
+    Object.assign({}, baseConfig, mainConfig),
+    Object.assign({}, baseConfig, preloadConfig),
+    Object.assign({}, baseConfig, rendererConfig),
+];
