@@ -1,10 +1,10 @@
+import { initializeIcons } from "@fluentui/react";
 import React from "react";
 import { render } from "react-dom";
-import { IpcChannel } from "../shared/IpcChannel";
-import { App } from "./App";
+import { MainApp } from "./MainApp";
 
-window.ipcRenderer.send(IpcChannel.rendererStarted);
+initializeIcons();
 
 document.addEventListener("DOMContentLoaded", () =>
-    render(<App ipcRenderer={window.ipcRenderer}></App>, document.getElementById("react-app"))
+    render(<MainApp ipcRenderer={window.ipcRenderer}></MainApp>, document.getElementById("react-app"))
 );
