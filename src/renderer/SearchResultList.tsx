@@ -13,7 +13,7 @@ export const SearchResultList: FC<Props> = ({ colorTheme, searchResultItems }) =
     return (
         <Stack tokens={{ childrenGap: UeliSpacing["1x"] }}>
             {searchResultItems.map((searchResultItem) => (
-                <StackItem key={`${searchResultItem.title}`}>
+                <StackItem key={`${searchResultItem.title}-${searchResultItem.selected}`}>
                     <SearchResultListItem
                         colorTheme={colorTheme}
                         searchResultItem={searchResultItem}
