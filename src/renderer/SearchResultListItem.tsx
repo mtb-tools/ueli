@@ -15,7 +15,10 @@ export const SearchResultListItem: FC<Props> = ({ colorTheme, searchResultItem, 
         <Stack
             horizontal
             verticalAlign="center"
-            tokens={{ padding: UeliSpacing["0.5x"] }}
+            tokens={{
+                padding: UeliSpacing["0.5x"],
+                childrenGap: UeliSpacing["0.5x"],
+            }}
             style={{
                 backgroundColor: selected ? colorTheme.palette.themeDark : "none",
                 borderRadius: UeliBorder["1x"],
