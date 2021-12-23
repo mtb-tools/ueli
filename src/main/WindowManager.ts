@@ -19,6 +19,7 @@ export class WindowManager {
             autoHideMenuBar: true,
             webPreferences: {
                 preload: this.preloadScriptFilePath,
+                spellcheck: false,
             },
         });
 
