@@ -48,7 +48,7 @@
         "prettier": "^2.3.2",
         "style-loader": "^3.2.1",
         "ts-jest": "^27.1.3",
-        "ts-loader": "^9.2.5",
+        "ts-loader": "^9.2.8",
         "typescript": "^4.3.5",
         "ueli-designsystem": "https://github.com/oliverschwendener/ueli-designsystem",
         "vue": "^3.2.31",
