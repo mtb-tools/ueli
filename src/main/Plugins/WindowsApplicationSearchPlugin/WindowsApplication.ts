@@ -6,7 +6,7 @@ import { FilePathLocationOpener } from "../../LocationOpeners/FilePathLocationOp
 import { WindowsApplicationRetrieverResult } from "./WindowsApplicationRetrieverResult";
 
 export class WindowsApplication implements Searchable {
-    public static fromWindowsAppRetriever(app: WindowsApplicationRetrieverResult): WindowsApplication {
+    public static fromWindowsAppRetrieverResult(app: WindowsApplicationRetrieverResult): WindowsApplication {
         return new WindowsApplication(app.BaseName, app.FullName, app.IconFilePath);
     }
 
