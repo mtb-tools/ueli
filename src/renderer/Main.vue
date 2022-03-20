@@ -68,7 +68,9 @@ export default defineComponent({
                     searchTerm
                 );
             } catch (error) {
-                this.handleError(error);
+                if (error instanceof Error) {
+                    this.handleError(error);
+                }
             }
         },
 
@@ -76,7 +78,9 @@ export default defineComponent({
             try {
                 await this.Bridge.ipcRenderer.invoke(IpcChannel.Execute, searchResultItem);
             } catch (error) {
-                this.handleError(error);
+                if (error instanceof Error) {
+                    this.handleError(error);
+                }
             }
         },
 
@@ -84,7 +88,9 @@ export default defineComponent({
             try {
                 await this.Bridge.ipcRenderer.invoke(IpcChannel.OpenLocation, searchResultItem);
             } catch (error) {
-                this.handleError(error);
+                if (error instanceof Error) {
+                    this.handleError(error);
+                }
             }
         },
 
@@ -101,7 +107,7 @@ export default defineComponent({
         },
     },
 
-    mounted() {
+    mounted(): void {
         this.registerIpcEventListeners();
         this.registerVueEventListeners();
     },
