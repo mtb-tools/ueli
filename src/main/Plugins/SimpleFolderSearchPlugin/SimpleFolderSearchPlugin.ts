@@ -22,14 +22,14 @@ export class SimpleFolderSearchPlugin extends SearchPlugin<unknown> {
 
     public async rescan(): Promise<void> {
         const filePaths = await FileSystemUtility.getFolderItems(this.applicationRuntimeInformation.userHomePath);
-        this.items = await Promise.all(filePaths.map((filePath) => this.getIcon(filePath)));
+        this.items = await Promise.all(filePaths.map((filePath) => SimpleFolderSearchPlugin.getIcon(filePath)));
     }
 
     public getAllSearchables(): SimpleFolderSearchResultItem[] {
         return this.items.map((file) => new SimpleFolderSearchResultItem(file.filePath, file.iconDataUrl));
     }
 
-    private async getIcon(filePath: string): Promise<SimpleFolderSearchItem> {
+    private static async getIcon(filePath: string): Promise<SimpleFolderSearchItem> {
         return {
             filePath,
             iconDataUrl: await FileIconUtility.getIconDataUrlFromFilePath(filePath),
