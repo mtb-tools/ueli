@@ -5,40 +5,35 @@ import { SearchResultItemDummy } from "../../common/SearchResult/SearchResultIte
 
 describe(ExecutionService, () => {
     describe(Executor.prototype.execute, () => {
-        it("should succeed if the corresponding executor resolves", (done) => {
+        it("should succeed if the corresponding executor resolves", async () => {
             const executorDummy = new ExecutorDummy();
-            new ExecutionService([executorDummy])
-                .execute(SearchResultItemDummy.withExecutorId(executorDummy.executorId))
-                .then(() => done())
-                .catch((error) => done(error));
+            const executionService = new ExecutionService([executorDummy]);
+            await executionService.execute(SearchResultItemDummy.withExecutorId(executorDummy.executorId));
         });
 
-        it("should fail if the corresponding executor rejects", (done) => {
-            const executorDummy = new ExecutorDummy();
-            executorDummy.executionWillSucceed = false;
+        it("should fail if the corresponding executor rejects", async () => {
+            const executorDummy = new ExecutorDummy(undefined, false);
+            const executionService = new ExecutionService([executorDummy]);
 
-            new ExecutionService([executorDummy])
-                .execute(SearchResultItemDummy.withExecutorId(executorDummy.executorId))
-                .then(() => done("Should have failed"))
-                .catch((error) => {
-                    expect(error).toBe("Failed");
-                    done();
-                });
+            try {
+                await executionService.execute(SearchResultItemDummy.withExecutorId(executorDummy.executorId));
+            } catch (error) {
+                expect(error).toBe("Failed");
+            }
         });
 
-        it("should fail if there is no corresponding executor found", (done) => {
-            const executorDummy = new ExecutorDummy();
-            new ExecutionService([executorDummy])
-                .execute(SearchResultItemDummy.withExecutorId("some random executor id"))
-                .then(() => done("Should have failed"))
-                .catch((error) => {
-                    expect(error).toBe(
-                        `Can't execute "${
-                            SearchResultItemDummy.withExecutorId("some random executor id").executionArgument
-                        }". Reason: no executor found.`
-                    );
-                    done();
-                });
+        it("should fail if there is no corresponding executor found", async () => {
+            const executionService = new ExecutionService([new ExecutorDummy()]);
+
+            try {
+                await executionService.execute(SearchResultItemDummy.withExecutorId("some random executor id"));
+            } catch (error) {
+                expect(error).toBe(
+                    `Can't execute "${
+                        SearchResultItemDummy.withExecutorId("some random executor id").executionArgument
+                    }". Reason: no executor found.`
+                );
+            }
         });
     });
 });
