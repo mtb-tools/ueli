@@ -1,4 +1,4 @@
-import { ApplicationRuntimeInformation } from "../../ApplicationRuntimeInformation";
+import { ExecutionContext } from "../../ExecutionContext";
 import { UeliCommandEvent } from "../../UeliCommandEvent";
 import { SearchPlugin } from "../SearchPlugin";
 import { UeliCommand } from "./UeliCommand";
@@ -8,8 +8,8 @@ export class UeliCommandsPlugin extends SearchPlugin<unknown> {
     protected readonly defaultSettings = {};
     private readonly items: UeliCommand[];
 
-    public constructor(applicationRuntimeInformation: ApplicationRuntimeInformation) {
-        super(applicationRuntimeInformation);
+    public constructor(executionContext: ExecutionContext) {
+        super(executionContext);
 
         this.items = [
             new UeliCommand("Settings", "Opens ueli's settings", UeliCommandEvent.OpenSettings),

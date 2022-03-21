@@ -1,7 +1,7 @@
 import { createHash } from "crypto";
 import { basename, extname, join } from "path";
 import { LocalFilePathSearchResultItemIcon } from "../../../common/SearchResult/LocalFilePathSearchResultItemIcon";
-import { ApplicationRuntimeInformation } from "../../ApplicationRuntimeInformation";
+import { ExecutionContext } from "../../ExecutionContext";
 import { SearchPlugin } from "../SearchPlugin";
 import { MacOsApplication } from "./MacOsApplication";
 import { app } from "electron";
@@ -13,10 +13,10 @@ export class MacOsApplicationSearchPlugin extends SearchPlugin<Record<string, un
     private applications: MacOsApplication[];
 
     public constructor(
-        applicationRunTimeInformation: ApplicationRuntimeInformation,
+        executionContext: ExecutionContext,
         private readonly macOsApplicationFileRetriever: () => Promise<string[]>
     ) {
-        super(applicationRunTimeInformation);
+        super(executionContext);
 
         this.defaultSettings = {};
         this.applications = [];

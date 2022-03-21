@@ -1,4 +1,4 @@
-export interface ApplicationRuntimeInformation {
+export interface ExecutionContext {
     executablePath: string;
     temporaryDirectoryPath: string;
     userDataPath: string;

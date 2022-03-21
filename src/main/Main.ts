@@ -9,7 +9,7 @@ import { LocationOpeningService } from "./Core/LocationOpeningService";
 import { SearchEngine } from "./Core/SearchEngine";
 import { WindowManager } from "./WindowManager";
 import { TrayIconManager } from "./TrayIconManager";
-import { ApplicationRuntimeInformation } from "./ApplicationRuntimeInformation";
+import { ExecutionContext } from "./ExecutionContext";
 import { UeliCommandExecutor } from "./Executors/UeliCommandExecutor";
 import { OperatingSystem } from "../common/OperatingSystem/OperatingSystem";
 import { WindowsPluginRepository } from "./PluginRepository/WindowsPluginRepository";
@@ -22,7 +22,7 @@ import { ConsoleLogger } from "../common/Logger/ConsoleLogger";
 const operatingSystem = OperatingSystemHelper.getOperatingSystem(platform());
 const logger = new ConsoleLogger();
 
-const applicationRuntimeInformation: ApplicationRuntimeInformation = {
+const executionContext: ExecutionContext = {
     executablePath: app.getPath("exe"),
     temporaryDirectoryPath: app.getPath("temp"),
     userDataPath: app.getPath("userData"),
@@ -30,7 +30,7 @@ const applicationRuntimeInformation: ApplicationRuntimeInformation = {
 };
 
 const settingsManager = new SettingsManager(
-    join(applicationRuntimeInformation.userDataPath, "ueli9.settings.json"),
+    join(executionContext.userDataPath, "ueli9.settings.json"),
     defaultSettings,
     logger
 );
@@ -40,8 +40,8 @@ const trayIconManager = new TrayIconManager(operatingSystem, ipcMain);
 
 const pluginRepository =
     operatingSystem === OperatingSystem.Windows
-        ? new WindowsPluginRepository(applicationRuntimeInformation)
-        : new MacOsPluginRepository(applicationRuntimeInformation);
+        ? new WindowsPluginRepository(executionContext)
+        : new MacOsPluginRepository(executionContext);
 
 const searchEngine = new SearchEngine(
     settingsManager.getSettings().searchEngineSettings,

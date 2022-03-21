@@ -1,12 +1,12 @@
-import { ApplicationRuntimeInformation } from "./ApplicationRuntimeInformation";
+import { ExecutionContext } from "./ExecutionContext";
 
-export class DummyApplicationRuntimeInformation {
+export class DummyExecutionContext {
     public static empty({
         executablePath = "",
         temporaryDirectoryPath = "",
         userDataPath = "",
         userHomePath = "",
-    } = {}): ApplicationRuntimeInformation {
+    } = {}): ExecutionContext {
         return {
             executablePath,
             temporaryDirectoryPath,

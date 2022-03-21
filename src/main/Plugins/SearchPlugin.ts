@@ -1,5 +1,5 @@
 import { join } from "path";
-import { ApplicationRuntimeInformation } from "../ApplicationRuntimeInformation";
+import { ExecutionContext } from "../ExecutionContext";
 import { Searchable } from "../Core/Searchable";
 import { FileSystemUtility } from "../Utilities/FileSystemUtility";
 
@@ -13,12 +13,12 @@ export abstract class SearchPlugin<PluginSettingsType> {
     public abstract rescan(): Promise<void>;
     public abstract clearCache(): Promise<void>;
 
-    protected constructor(protected readonly applicationRuntimeInformation: ApplicationRuntimeInformation) {
+    protected constructor(protected readonly executionContext: ExecutionContext) {
         this.settings = undefined;
     }
 
     public getTemporaryFolderPath(): string {
-        return join(this.applicationRuntimeInformation.userDataPath, this.pluginId);
+        return join(this.executionContext.userDataPath, this.pluginId);
     }
 
     public getSettingsFilePath(): string {

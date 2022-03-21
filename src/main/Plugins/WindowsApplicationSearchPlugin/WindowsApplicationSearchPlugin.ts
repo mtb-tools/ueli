@@ -2,7 +2,7 @@ import { WindowsApplication } from "./WindowsApplication";
 import { WindowsApplicationSearchSettings } from "./WindowsApplicationSearchSettings";
 import { WindowsApplicationRetrieverResult } from "./WindowsApplicationRetrieverResult";
 import { SearchPlugin } from "../SearchPlugin";
-import { ApplicationRuntimeInformation } from "../../ApplicationRuntimeInformation";
+import { ExecutionContext } from "../../ExecutionContext";
 import { join } from "path";
 import { extractShortcutPowershellScript, getWindowsAppsPowershellScript } from "./PowershellScripts";
 
@@ -15,22 +15,15 @@ export class WindowsApplicationSearchPlugin extends SearchPlugin<WindowsApplicat
     private applications: WindowsApplication[];
 
     public constructor(
-        applicationRuntimeInformation: ApplicationRuntimeInformation,
+        executionContext: ExecutionContext,
         private readonly executePowershellScript: (powershellScript: string) => Promise<string>
     ) {
-        super(applicationRuntimeInformation);
+        super(executionContext);
 
         this.defaultSettings = {
             folderPaths: [
                 "C:\\ProgramData\\Microsoft\\Windows\\Start Menu",
-                join(
-                    applicationRuntimeInformation.userHomePath,
-                    "AppData",
-                    "Roaming",
-                    "Microsoft",
-                    "Windows",
-                    "Start Menu"
-                ),
+                join(executionContext.userHomePath, "AppData", "Roaming", "Microsoft", "Windows", "Start Menu"),
             ],
             fileExtensions: ["lnk"],
         };

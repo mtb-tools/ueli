@@ -1,4 +1,4 @@
-import { ApplicationRuntimeInformation } from "../../ApplicationRuntimeInformation";
+import { ExecutionContext } from "../../ExecutionContext";
 import { FileIconUtility } from "../../Utilities/FileIconUtility";
 import { FileSystemUtility } from "../../Utilities/FileSystemUtility";
 import { SearchPlugin } from "../SearchPlugin";
@@ -11,8 +11,8 @@ export class SimpleFolderSearchPlugin extends SearchPlugin<unknown> {
 
     private items: SimpleFolderSearchItem[];
 
-    public constructor(applicationRuntimeInformation: ApplicationRuntimeInformation) {
-        super(applicationRuntimeInformation);
+    public constructor(executionContext: ExecutionContext) {
+        super(executionContext);
         this.items = [];
     }
 
@@ -21,7 +21,7 @@ export class SimpleFolderSearchPlugin extends SearchPlugin<unknown> {
     }
 
     public async rescan(): Promise<void> {
-        const filePaths = await FileSystemUtility.getFolderItems(this.applicationRuntimeInformation.userHomePath);
+        const filePaths = await FileSystemUtility.getFolderItems(this.executionContext.userHomePath);
         this.items = await Promise.all(filePaths.map((filePath) => SimpleFolderSearchPlugin.getIcon(filePath)));
     }
 
