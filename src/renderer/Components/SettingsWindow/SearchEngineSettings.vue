@@ -112,9 +112,9 @@ export default defineComponent({
             };
         },
 
-        failedToSaveSettingsNotification(error: Error): NotificationData {
+        failedToSaveSettingsNotification(error: unknown): NotificationData {
             return {
-                message: `Failed to save settings. Reason ${error.message}`,
+                message: `Failed to save settings. Reason ${error}`,
                 autoHide: false,
                 type: NotificationType.Danger,
                 icon: "exclamation-triangle-fill",

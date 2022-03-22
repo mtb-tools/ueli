@@ -68,9 +68,7 @@ export default defineComponent({
                     searchTerm
                 );
             } catch (error) {
-                if (error instanceof Error) {
-                    this.handleError(error);
-                }
+                this.handleError(error);
             }
         },
 
@@ -78,9 +76,7 @@ export default defineComponent({
             try {
                 await this.Bridge.ipcRenderer.invoke(IpcChannel.Execute, searchResultItem);
             } catch (error) {
-                if (error instanceof Error) {
-                    this.handleError(error);
-                }
+                this.handleError(error);
             }
         },
 
@@ -88,9 +84,7 @@ export default defineComponent({
             try {
                 await this.Bridge.ipcRenderer.invoke(IpcChannel.OpenLocation, searchResultItem);
             } catch (error) {
-                if (error instanceof Error) {
-                    this.handleError(error);
-                }
+                this.handleError(error);
             }
         },
 
@@ -102,7 +96,7 @@ export default defineComponent({
             vueEventEmitter.on("GlobalKeyDown", (event: KeyboardEvent) => this.onGlobalKeyDown(event));
         },
 
-        handleError(error: Error): void {
+        handleError(error: unknown): void {
             console.error(`Handled error: ${error}`);
         },
     },
