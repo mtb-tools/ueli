@@ -18,7 +18,7 @@ export class WindowManager {
     private mainWindow?: BrowserWindow;
     private settingsWindow?: BrowserWindow;
 
-    public createMainWindow(): void {
+    public async createMainWindow(): Promise<void> {
         this.mainWindow = new BrowserWindow(
             this.mergeWindowConstructorOptionsWithDefault({
                 frame: false,
@@ -30,51 +30,53 @@ export class WindowManager {
             })
         );
 
-        this.mainWindow.loadFile(this.mainHtmlFilePath);
+        await this.mainWindow.loadFile(this.mainHtmlFilePath);
         this.mainWindow.on("blur", () => this.hideMainWindow());
     }
 
-    public createSettingsWindow(): void {
+    public async createSettingsWindow(): Promise<void> {
         this.settingsWindow = new BrowserWindow(this.mergeWindowConstructorOptionsWithDefault({}));
         this.settingsWindow.setMenuBarVisibility(false);
-        this.settingsWindow.loadFile(this.settingsHtmlFilePath);
+        await this.settingsWindow.loadFile(this.settingsHtmlFilePath);
     }
 
     public toggleMainWindow(): void {
-        this.toggleWindow(this.mainWindow);
+        WindowManager.toggleWindow(this.mainWindow);
     }
 
     public showMainWindow(): void {
-        this.showWindow(this.mainWindow);
+        WindowManager.showWindow(this.mainWindow);
     }
 
-    public showSettingsWindow(): void {
+    public async showSettingsWindow(): Promise<void> {
         if (!this.settingsWindow || this.settingsWindow.isDestroyed()) {
-            this.createSettingsWindow();
+            await this.createSettingsWindow();
         }
 
-        this.showWindow(this.settingsWindow);
+        WindowManager.showWindow(this.settingsWindow);
     }
 
     public hideMainWindow(): void {
-        this.hideWindow(this.mainWindow);
+        WindowManager.hideWindow(this.mainWindow);
     }
 
     public hideSettingsWindow(): void {
-        this.hideWindow(this.settingsWindow);
+        WindowManager.hideWindow(this.settingsWindow);
     }
 
     public toggleSettingsWindow(): void {
-        this.toggleWindow(this.settingsWindow);
+        WindowManager.toggleWindow(this.settingsWindow);
     }
 
-    private toggleWindow(browserWindow?: BrowserWindow) {
+    private static toggleWindow(browserWindow?: BrowserWindow) {
         if (browserWindow && !browserWindow.isDestroyed()) {
-            browserWindow.isVisible() ? this.hideWindow(browserWindow) : this.showWindow(browserWindow);
+            browserWindow.isVisible()
+                ? WindowManager.hideWindow(browserWindow)
+                : WindowManager.showWindow(browserWindow);
         }
     }
 
-    private showWindow(browserWindow?: BrowserWindow): void {
+    private static showWindow(browserWindow?: BrowserWindow): void {
         if (browserWindow && !browserWindow.isDestroyed()) {
             if (browserWindow.isVisible()) {
                 browserWindow.focus();
@@ -82,22 +84,22 @@ export class WindowManager {
                 browserWindow.show();
             }
 
-            this.sendMessageToWindow(browserWindow, IpcChannel.MainWindowShown);
+            WindowManager.sendMessageToWindow(browserWindow, IpcChannel.MainWindowShown);
         }
     }
 
-    private hideWindow(browserWindow?: BrowserWindow): void {
+    private static hideWindow(browserWindow?: BrowserWindow): void {
         if (browserWindow && !browserWindow.isDestroyed()) {
             browserWindow.hide();
         }
     }
 
-    private sendMessageToWindow<ArgumentType>(
+    private static sendMessageToWindow<ArgumentType>(
         browserWindow: BrowserWindow,
         channel: IpcChannel,
         ...args: ArgumentType[]
     ): void {
-        if (this.mainWindow && !this.mainWindow.isDestroyed()) {
+        if (browserWindow && !browserWindow.isDestroyed()) {
             browserWindow.webContents.send(channel, args);
         }
     }

@@ -85,7 +85,7 @@ export class SearchEngine {
         }
     }
 
-    public updateSettings(updatedSettings: SearchEngineSettings): void {
+    public async updateSettings(updatedSettings: SearchEngineSettings): Promise<void> {
         if (
             SearchEngine.rescanOptionChanged<number>(
                 updatedSettings.automaticRescanIntervalInSeconds,
@@ -97,7 +97,7 @@ export class SearchEngine {
             )
         ) {
             if (updatedSettings.automaticRescanEnabled && updatedSettings.automaticRescanIntervalInSeconds) {
-                this.rescan();
+                await this.rescan();
             } else {
                 this.cancelScheduledRescan();
             }

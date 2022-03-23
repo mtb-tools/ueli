@@ -36,16 +36,16 @@ export class MainApplication {
 
     private registerElectronAppEventListeners(): void {
         this.appendCommandlineSwitches();
-        this.electronApp.on("ready", () => this.startApp());
+        this.electronApp.on("ready", async () => await this.startApp());
         this.electronApp.on("window-all-closed", () => this.quitApp());
     }
 
-    private startApp(): void {
+    private async startApp(): Promise<void> {
         this.registerIpcEventListeners();
         this.createTrayIcon();
-        this.windowManager.createMainWindow();
+        await this.windowManager.createMainWindow();
         this.registerGlobalKeyEventListeners();
-        this.initializeSearchEngine();
+        await this.initializeSearchEngine();
     }
 
     private quitApp(): void {
@@ -80,8 +80,8 @@ export class MainApplication {
         this.globalShortcut.register("Alt+Space", () => this.windowManager.toggleMainWindow());
     }
 
-    private initializeSearchEngine(): Promise<void> {
-        return this.searchEngine.initialize();
+    private async initializeSearchEngine(): Promise<void> {
+        await this.searchEngine.initialize();
     }
 
     private registerIpcEventListeners(): void {
@@ -137,12 +137,15 @@ export class MainApplication {
 
         this.ipcMain.on(IpcChannel.EscapePressed, () => this.windowManager.hideMainWindow());
 
-        this.ipcMain.on(IpcChannel.TrayIconEvent, (ipcMainEvent, trayIconEvent: TrayIconEvent) =>
-            this.handleTrayIconEvent(trayIconEvent)
+        this.ipcMain.on(
+            IpcChannel.TrayIconEvent,
+            async (ipcMainEvent, trayIconEvent: TrayIconEvent) => await this.handleTrayIconEvent(trayIconEvent)
         );
 
-        this.ipcMain.on(IpcChannel.UeliCommandEvent, (ipcMainEvent, ueliCommandEvent: UeliCommandEvent) =>
-            this.handleUeliCommandEvent(ueliCommandEvent)
+        this.ipcMain.on(
+            IpcChannel.UeliCommandEvent,
+            async (ipcMainEvent, ueliCommandEvent: UeliCommandEvent) =>
+                await this.handleUeliCommandEvent(ueliCommandEvent)
         );
 
         this.ipcMain.on(
@@ -151,8 +154,8 @@ export class MainApplication {
         );
     }
 
-    private rescan(): Promise<void> {
-        return this.searchEngine.rescan();
+    private async rescan(): Promise<void> {
+        await this.searchEngine.rescan();
     }
 
     private async clearCaches(): Promise<void> {
@@ -164,14 +167,14 @@ export class MainApplication {
         }
     }
 
-    private handleTrayIconEvent(event: TrayIconEvent): void {
+    private async handleTrayIconEvent(event: TrayIconEvent): Promise<void> {
         switch (event) {
             case TrayIconEvent.ShowClicked:
                 this.windowManager.showMainWindow();
                 break;
 
             case TrayIconEvent.SettingsClicked:
-                this.windowManager.showSettingsWindow();
+                await this.windowManager.showSettingsWindow();
                 break;
 
             case TrayIconEvent.QuitClicked:
@@ -179,11 +182,11 @@ export class MainApplication {
                 break;
 
             case TrayIconEvent.RescanClicked:
-                this.rescan();
+                await this.rescan();
                 break;
 
             case TrayIconEvent.ClearCachesClicked:
-                this.clearCaches();
+                await this.clearCaches();
                 break;
 
             default:
@@ -191,10 +194,10 @@ export class MainApplication {
         }
     }
 
-    private handleUeliCommandEvent(event: UeliCommandEvent): void {
+    private async handleUeliCommandEvent(event: UeliCommandEvent): Promise<void> {
         switch (event) {
             case UeliCommandEvent.OpenSettings:
-                this.windowManager.showSettingsWindow();
+                await this.windowManager.showSettingsWindow();
                 break;
 
             case UeliCommandEvent.QuitApp:
@@ -202,7 +205,7 @@ export class MainApplication {
                 break;
 
             case UeliCommandEvent.Rescan:
-                this.rescan();
+                await this.rescan();
                 break;
 
             default:
@@ -210,8 +213,8 @@ export class MainApplication {
         }
     }
 
-    private updateSettings(updatedSettings: Settings): Promise<void> {
-        this.searchEngine.updateSettings(updatedSettings.searchEngineSettings);
+    private async updateSettings(updatedSettings: Settings): Promise<void> {
+        await this.searchEngine.updateSettings(updatedSettings.searchEngineSettings);
         return this.settingsManager.updateSettings(updatedSettings);
     }
 }
