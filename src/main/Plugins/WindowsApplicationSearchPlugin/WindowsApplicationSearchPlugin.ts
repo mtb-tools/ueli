@@ -1,10 +1,10 @@
-import { WindowsApplication } from "./WindowsApplication";
-import { WindowsApplicationSearchSettings } from "./WindowsApplicationSearchSettings";
-import { WindowsApplicationRetrieverResult } from "./WindowsApplicationRetrieverResult";
-import { SearchPlugin } from "../SearchPlugin";
-import { ExecutionContext } from "../../ExecutionContext";
 import { join } from "path";
+import { ExecutionContext } from "../../ExecutionContext";
+import { SearchPlugin } from "../SearchPlugin";
 import { extractShortcutPowershellScript, getWindowsAppsPowershellScript } from "./PowershellScripts";
+import { WindowsApplication } from "./WindowsApplication";
+import { WindowsApplicationRetrieverResult } from "./WindowsApplicationRetrieverResult";
+import { WindowsApplicationSearchSettings } from "./WindowsApplicationSearchSettings";
 
 export class WindowsApplicationSearchPlugin extends SearchPlugin<WindowsApplicationSearchSettings> {
     private static readonly extractShortcutPowershellScript = extractShortcutPowershellScript;
@@ -61,10 +61,8 @@ export class WindowsApplicationSearchPlugin extends SearchPlugin<WindowsApplicat
         return `
             ${WindowsApplicationSearchPlugin.extractShortcutPowershellScript}
             ${WindowsApplicationSearchPlugin.getWindowsAppsPowershellScript}
-            Get-WindowsApps
-                -FolderPaths ${folderPaths}
-                -FileExtensions ${fileExtensions}
-                -AppIconFolder ${tempFolderPath}
+
+            Get-WindowsApps -FolderPaths ${folderPaths} -FileExtensions ${fileExtensions} -AppIconFolder ${tempFolderPath};
         `;
     }
 
