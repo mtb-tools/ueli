@@ -1,6 +1,6 @@
 import { Searchable } from "../../Core/Searchable";
-import { DummyExecutionContext } from "../../DummyExecutionContext";
 import { MethodNotImplementedError } from "../../Errors/MethodNotImplementedError";
+import { ExecutionContextFactory } from "../../ExecutionContextFactory";
 import { SearchPlugin } from "../SearchPlugin";
 
 export class DummySearchPlugin extends SearchPlugin<unknown> {
@@ -14,7 +14,7 @@ export class DummySearchPlugin extends SearchPlugin<unknown> {
         public onRescan?: () => Promise<void>,
         public onClearCache?: () => Promise<void>
     ) {
-        super(DummyExecutionContext.empty({ userDataPath: applicationTempPath }));
+        super(ExecutionContextFactory.fromDummy({ userDataPath: applicationTempPath }));
     }
 
     public getAllSearchables(): Searchable[] {

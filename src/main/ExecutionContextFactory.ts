@@ -10,4 +10,13 @@ export class ExecutionContextFactory {
             electronApp.getPath("home")
         );
     }
+
+    public static fromDummy({
+        executablePath = "",
+        temporaryDirectoryPath = "",
+        userDataPath = "",
+        userHomePath = "",
+    } = {}): ExecutionContext {
+        return new ExecutionContext(executablePath, temporaryDirectoryPath, userDataPath, userHomePath);
+    }
 }
