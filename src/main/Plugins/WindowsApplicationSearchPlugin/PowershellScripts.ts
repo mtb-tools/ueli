@@ -9,7 +9,7 @@ export const extractShortcutPowershellScript = `
                 $TargetPath = $Shell.CreateShortcut($ShortcutFilePath).TargetPath
                 $TargetPathAccessible = Test-Path -Path $TargetPath -PathType Leaf
                 if ($TargetPathAccessible) {
-                    return $TargetPath;
+                    return $TargetPath
                 }
                 else {
                     return $ShortcutFilePath
@@ -50,7 +50,8 @@ export const getWindowsAppsPowershellScript = `
                         $FilePathToExtractIcon = Extract-Shortcut -ShortcutFilePath $File.FullName
                     }
 
-                    $Icon = [System.Drawing.Icon]::ExtractAssociatedIcon($FilePathToExtractIcon);
+                    $Icon = [System.Drawing.Icon]::ExtractAssociatedIcon($FilePathToExtractIcon)
+
                     if ($Icon -ne $null) {
                         $Icon.ToBitmap().Save($File.IconFilePath, [System.Drawing.Imaging.ImageFormat]::Png)
                     }
