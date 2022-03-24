@@ -1,12 +1,12 @@
-import { DummySearchable } from "./DummySearchable";
-import { DummySearchPlugin } from "../Plugins/DummySearchPlugin/DummySearchPlugin";
-import { FileSystemUtility } from "../Utilities/FileSystemUtility";
 import { join } from "path";
-import { Searchable } from "./Searchable";
-import { SearchEngine } from "./SearchEngine";
+import { TestLogger } from "../../common/Logger/TestLogger";
 import { SearchEngineSettings } from "../../common/SearchEngineSettings";
 import { SearchResultItemDummy } from "../../common/SearchResult/SearchResultItemDummy";
-import { TestLogger } from "../../common/Logger/TestLogger";
+import { DummySearchPlugin } from "../Plugins/DummySearchPlugin/DummySearchPlugin";
+import { FileSystemUtility } from "../Utilities/FileSystemUtility";
+import { DummySearchable } from "./DummySearchable";
+import { Searchable } from "./Searchable";
+import { SearchEngine } from "./SearchEngine";
 
 describe(SearchEngine, () => {
     const tempFolderPath = join(__dirname, "temp");
@@ -45,11 +45,9 @@ describe(SearchEngine, () => {
                 [new DummySearchPlugin(tempFolderPath, onGetAllSearchables)],
                 logger
             );
-            const actual = searchEngine.search("item");
-            expect(actual.length).toBe(0);
-            expect(searchEngine.isInitialized()).toBe(false);
+            expect(searchEngine.search("item").length).toBe(0);
             await searchEngine.initialize();
-            expect(searchEngine.isInitialized()).toBe(true);
+            expect(searchEngine.search("item").length).toBe(searchables.length);
         });
 
         it("should return an empty array if the search term is an empty string", async () => {

@@ -24,12 +24,8 @@ export class SearchEngine {
         this.initialized = true;
     }
 
-    public isInitialized(): boolean {
-        return this.initialized;
-    }
-
     public search(searchTerm: string): SearchResultItem[] {
-        if (!this.initialized || searchTerm.trim().length === 0) {
+        if (!this.initialized || SearchEngine.isEmptySearchTerm(searchTerm)) {
             return [];
         }
 
@@ -124,5 +120,9 @@ export class SearchEngine {
             updatedSettings.automaticRescanEnabled !== this.settings.automaticRescanEnabled;
 
         return automaticRescanIntervalInSecondsOptionChanged || automaticRescanEnabledOptionChanged;
+    }
+
+    private static isEmptySearchTerm(searchTerm: string): boolean {
+        return searchTerm.trim().length === 0;
     }
 }
