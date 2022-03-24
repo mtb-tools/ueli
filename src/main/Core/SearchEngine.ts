@@ -1,10 +1,10 @@
 import Fuse from "fuse.js";
 import { Logger } from "../../common/Logger/Logger";
+import { SearchEngineSettings } from "../../common/SearchEngineSettings";
+import { SearchResultItem } from "../../common/SearchResult/SearchResultItem";
+import { SearchPlugin } from "../Plugins/SearchPlugin";
 import { Searchable } from "./Searchable";
 import { SearchEngineRescanError } from "./SearchEngineRescanError";
-import { SearchEngineSettings } from "../../common/SearchEngineSettings";
-import { SearchPlugin } from "../Plugins/SearchPlugin";
-import { SearchResultItem } from "../../common/SearchResult/SearchResultItem";
 
 export class SearchEngine {
     private initialized = false;
@@ -62,21 +62,6 @@ export class SearchEngine {
         }
     }
 
-    public rescanIsCurrentlyRunning(): boolean {
-        return this.rescanPromise !== undefined;
-    }
-
-    public cancelScheduledRescan(): void {
-        if (this.scheduledRescanTimeout) {
-            clearTimeout(<number>this.scheduledRescanTimeout);
-            this.logger.info("Scheduled rescan cancelled");
-        }
-    }
-
-    public hasRescanScheduled(): boolean {
-        return this.scheduledRescanTimeout !== undefined;
-    }
-
     public async clearCaches(): Promise<void> {
         try {
             await Promise.all(this.searchPlugins.map((searchPlugin) => searchPlugin.clearCache()));
@@ -86,16 +71,7 @@ export class SearchEngine {
     }
 
     public async updateSettings(updatedSettings: SearchEngineSettings): Promise<void> {
-        if (
-            SearchEngine.rescanOptionChanged<number>(
-                updatedSettings.automaticRescanIntervalInSeconds,
-                this.settings.automaticRescanIntervalInSeconds
-            ) ||
-            SearchEngine.rescanOptionChanged<boolean>(
-                updatedSettings.automaticRescanEnabled,
-                this.settings.automaticRescanEnabled
-            )
-        ) {
+        if (this.automaticRescanOptionChanged(updatedSettings)) {
             if (updatedSettings.automaticRescanEnabled && updatedSettings.automaticRescanIntervalInSeconds) {
                 await this.rescan();
             } else {
@@ -104,6 +80,17 @@ export class SearchEngine {
         }
 
         this.settings = updatedSettings;
+    }
+
+    private rescanIsCurrentlyRunning(): boolean {
+        return this.rescanPromise !== undefined;
+    }
+
+    private cancelScheduledRescan(): void {
+        if (this.scheduledRescanTimeout) {
+            clearTimeout(<number>this.scheduledRescanTimeout);
+            this.logger.info("Scheduled rescan cancelled");
+        }
     }
 
     private scheduleRescan(automaticRescanIntervalInSeconds: number): void {
@@ -129,7 +116,13 @@ export class SearchEngine {
         this.logger.error(`Handled error: ${error.message}`);
     }
 
-    private static rescanOptionChanged<T>(newValue: T, currentValue: T): boolean {
-        return newValue !== currentValue;
+    private automaticRescanOptionChanged(updatedSettings: SearchEngineSettings): boolean {
+        const automaticRescanIntervalInSecondsOptionChanged =
+            updatedSettings.automaticRescanIntervalInSeconds !== this.settings.automaticRescanIntervalInSeconds;
+
+        const automaticRescanEnabledOptionChanged =
+            updatedSettings.automaticRescanEnabled !== this.settings.automaticRescanEnabled;
+
+        return automaticRescanIntervalInSecondsOptionChanged || automaticRescanEnabledOptionChanged;
     }
 }
