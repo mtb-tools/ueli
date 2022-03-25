@@ -26,7 +26,7 @@ function Get-WindowsApps {
                 $FilePathToExtractIcon = Extract-Shortcut -ShortcutFilePath $File.FullName
             }
 
-            $Icon = [System.Drawing.Icon]::ExtractAssociatedIcon($FilePathToExtractIcon);
+            $Icon = [System.Drawing.Icon]::ExtractAssociatedIcon($FilePathToExtractIcon)
             if ($Icon -ne $null) {
                 $Icon.ToBitmap().Save($File.IconFilePath, [System.Drawing.Imaging.ImageFormat]::Png)
             }

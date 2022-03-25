@@ -1,33 +1,28 @@
 import { app, globalShortcut, ipcMain, shell } from "electron";
 import { platform } from "os";
+import { join } from "path";
+import { ConsoleLogger } from "../common/Logger/ConsoleLogger";
+import { OperatingSystem } from "../common/OperatingSystem/OperatingSystem";
 import { OperatingSystemHelper } from "../common/OperatingSystem/OperatingSystemHelper";
 import { ExecutionService } from "./Core/ExecutionService";
-import { FilePathExecutor } from "./Executors/FilePathExecutor";
-import { FilePathLocationOpener } from "./LocationOpeners/FilePathLocationOpener";
-import { MainApplication } from "./MainApplication";
 import { LocationOpeningService } from "./Core/LocationOpeningService";
 import { SearchEngine } from "./Core/SearchEngine";
-import { WindowManager } from "./WindowManager";
-import { TrayIconManager } from "./TrayIconManager";
-import { ExecutionContext } from "./ExecutionContext";
-import { UeliCommandExecutor } from "./Executors/UeliCommandExecutor";
-import { OperatingSystem } from "../common/OperatingSystem/OperatingSystem";
-import { WindowsPluginRepository } from "./PluginRepository/WindowsPluginRepository";
-import { MacOsPluginRepository } from "./PluginRepository/MacOsPluginRepository";
-import { SettingsManager } from "./SettingsManager";
-import { join } from "path";
 import { defaultSettings } from "./DefaultSettings";
-import { ConsoleLogger } from "../common/Logger/ConsoleLogger";
+import { ExecutionContextFactory } from "./ExecutionContextFactory";
+import { FilePathExecutor } from "./Executors/FilePathExecutor";
+import { UeliCommandExecutor } from "./Executors/UeliCommandExecutor";
+import { FilePathLocationOpener } from "./LocationOpeners/FilePathLocationOpener";
+import { MainApplication } from "./MainApplication";
+import { MacOsPluginRepository } from "./PluginRepository/MacOsPluginRepository";
+import { WindowsPluginRepository } from "./PluginRepository/WindowsPluginRepository";
+import { SettingsManager } from "./SettingsManager";
+import { TrayIconManager } from "./TrayIconManager";
+import { WindowManager } from "./WindowManager";
 
 const operatingSystem = OperatingSystemHelper.getOperatingSystem(platform());
 const logger = new ConsoleLogger();
 
-const executionContext: ExecutionContext = {
-    executablePath: app.getPath("exe"),
-    temporaryDirectoryPath: app.getPath("temp"),
-    userDataPath: app.getPath("userData"),
-    userHomePath: app.getPath("home"),
-};
+const executionContext = ExecutionContextFactory.fromElectronApp(app);
 
 const settingsManager = new SettingsManager(
     join(executionContext.userDataPath, "ueli9.settings.json"),

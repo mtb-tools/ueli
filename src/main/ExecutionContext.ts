@@ -1,6 +1,8 @@
-export interface ExecutionContext {
-    executablePath: string;
-    temporaryDirectoryPath: string;
-    userDataPath: string;
-    userHomePath: string;
+export class ExecutionContext {
+    public constructor(
+        public readonly executablePath: string,
+        public readonly temporaryDirectoryPath: string,
+        public readonly userDataPath: string,
+        public readonly userHomePath: string
+    ) {}
 }
