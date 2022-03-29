@@ -3,7 +3,7 @@
         <div class="inner-container" :class="{ focussed: isFocussed }">
             <i class="search-icon bi-search"></i>
             <input
-                ref="userInput"
+                ref="userInputRef"
                 class="input"
                 type="text"
                 autofocus
@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, onMounted, watch } from "vue";
 import { vueEventEmitter } from "../../VueEventEmitter";
 
 export default defineComponent({
@@ -26,40 +26,34 @@ export default defineComponent({
         },
     },
 
-    data(): { isFocussed: boolean; searchTerm: string } {
-        return {
-            isFocussed: false,
-            searchTerm: "",
+    setup(_, { emit }) {
+        const isFocussed = ref<boolean>(false);
+        const searchTerm = ref<string>("");
+        const userInputRef = ref<HTMLInputElement | null>(null);
+
+        const focusOnUserInput = (): void => userInputRef.value?.focus();
+
+        const onFocus = (): void => {
+            isFocussed.value = true;
         };
-    },
 
-    methods: {
-        focusOnUserInput(): void {
-            const $userInput = <HTMLInputElement>this.$refs.userInput;
-            $userInput.focus();
-        },
+        const onBlur = (): void => {
+            isFocussed.value = false;
+        };
 
-        onFocus(): void {
-            this.isFocussed = true;
-        },
+        const registerVueEventListeners = (): void => vueEventEmitter.on("MainWindowShown", () => focusOnUserInput());
 
-        onBlur(): void {
-            this.isFocussed = false;
-        },
+        onMounted(() => registerVueEventListeners());
 
-        registerVueEventListeners(): void {
-            vueEventEmitter.on("MainWindowShown", () => this.focusOnUserInput());
-        },
-    },
+        watch(searchTerm, () => emit("searchTermChanged", searchTerm.value));
 
-    watch: {
-        searchTerm(): void {
-            this.$emit("searchTermChanged", this.searchTerm);
-        },
-    },
-
-    mounted(): void {
-        this.registerVueEventListeners();
+        return {
+            isFocussed,
+            onBlur,
+            onFocus,
+            searchTerm,
+            userInputRef,
+        };
     },
 });
 </script>

@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, computed } from "vue";
 import { SearchResultItem } from "../../../common/SearchResult/SearchResultItem";
 import { ObjectUtility } from "../../../common/ObjectUtility";
 import SearchResultIcon from "./SearchResultIcon.vue";
@@ -67,28 +67,22 @@ export default defineComponent({
         },
     },
 
-    computed: {
-        elementId(): string {
-            return `search-result-position-${this.position}`;
-        },
-    },
+    setup({ item, position }, { emit }) {
+        const onMouseEnter = (): void => emit("mouseenter");
+        const onMouseLeave = (): void => emit("mouseleave");
+        const elementId = computed<string>(() => `search-result-position-${position}`);
 
-    methods: {
-        onClick(mouseEvent: MouseEvent): void {
-            if (mouseEvent.ctrlKey || mouseEvent.metaKey) {
-                this.$emit("openLocation", ObjectUtility.clone(this.item));
-            } else {
-                this.$emit("execute", ObjectUtility.clone(this.item));
-            }
-        },
+        const onClick = (mouseEvent: MouseEvent): void =>
+            mouseEvent.ctrlKey || mouseEvent.metaKey
+                ? emit("openLocation", ObjectUtility.clone(item))
+                : emit("execute", ObjectUtility.clone(item));
 
-        onMouseEnter(): void {
-            this.$emit("mouseenter");
-        },
-
-        onMouseLeave(): void {
-            this.$emit("mouseleave");
-        },
+        return {
+            elementId,
+            onClick,
+            onMouseEnter,
+            onMouseLeave,
+        };
     },
 });
 </script>

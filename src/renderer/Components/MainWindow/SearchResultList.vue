@@ -15,15 +15,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, ref, onMounted, watch } from "vue";
 import SearchResult from "./SearchResult.vue";
 import { SearchResultItem } from "../../../common/SearchResult/SearchResultItem";
 import { vueEventEmitter } from "../../VueEventEmitter";
 import { ObjectUtility } from "../../../common/ObjectUtility";
-
-interface Data {
-    currentlyHoveredPosition?: number;
-}
 
 export default defineComponent({
     emits: {
@@ -45,60 +41,26 @@ export default defineComponent({
 
     components: { SearchResult },
 
-    data(): Data {
-        return {
-            currentlyHoveredPosition: 0,
+    setup(props, { emit }) {
+        const currentlyHoveredPosition = ref<number | undefined>(0);
+
+        const onMouseEnter = (position: number): void => {
+            currentlyHoveredPosition.value = position;
         };
-    },
 
-    methods: {
-        execute(searchResultItem: SearchResultItem): void {
-            this.$emit("executionRequested", ObjectUtility.clone(searchResultItem));
-        },
-
-        openLocation(searchResultItem: SearchResultItem): void {
-            this.$emit("openLocationRequested", ObjectUtility.clone(searchResultItem));
-        },
-
-        currentlySelectedIndexChange(direction: "ArrowUp" | "ArrowDown"): void {
-            const minimumIndex = 0;
-            const maximumIndex = this.searchResultItems.length - 1;
-
-            if (this.currentlyHoveredPosition === undefined) {
-                this.currentlyHoveredPosition = 0;
-                return;
+        const onMouseLeave = (position: number): void => {
+            if (currentlyHoveredPosition.value === position) {
+                currentlyHoveredPosition.value = undefined;
             }
+        };
 
-            if (direction === "ArrowUp") {
-                this.currentlyHoveredPosition =
-                    this.currentlyHoveredPosition === minimumIndex ? maximumIndex : this.currentlyHoveredPosition - 1;
-            }
+        const execute = (searchResultItem: SearchResultItem): void =>
+            emit("executionRequested", ObjectUtility.clone(searchResultItem));
 
-            if (direction === "ArrowDown") {
-                this.currentlyHoveredPosition =
-                    this.currentlyHoveredPosition === maximumIndex ? minimumIndex : this.currentlyHoveredPosition + 1;
-            }
+        const openLocation = (searchResultItem: SearchResultItem): void =>
+            emit("openLocationRequested", ObjectUtility.clone(searchResultItem));
 
-            this.scrollElementIntoViewIfNecessary();
-        },
-
-        scrollElementIntoViewIfNecessary(): void {
-            const searchResultListContainer = document.getElementById("search-result-list-container") as
-                | HTMLDivElement
-                | undefined;
-
-            const currentlySelectedElement = <HTMLDivElement | undefined>(
-                document.getElementById(`search-result-position-${this.currentlyHoveredPosition}`)
-            );
-
-            if (searchResultListContainer && currentlySelectedElement) {
-                if (this.elementIsOutOfView(searchResultListContainer, currentlySelectedElement)) {
-                    currentlySelectedElement.scrollIntoView({ behavior: "smooth" });
-                }
-            }
-        },
-
-        elementIsOutOfView(container: HTMLDivElement, element: HTMLDivElement): boolean {
+        const elementIsOutOfView = (container: HTMLDivElement, element: HTMLDivElement): boolean => {
             const scrolledFromTop = container.scrollTop;
             const scrollContainerHeight = container.clientHeight;
             const elementOffsetTop = element.offsetTop - container.offsetTop;
@@ -108,43 +70,81 @@ export default defineComponent({
                 scrolledFromTop + scrollContainerHeight <= elementOffsetTop + elementHeight ||
                 elementOffsetTop <= scrolledFromTop
             );
-        },
+        };
 
-        onMouseEnter(position: number): void {
-            this.currentlyHoveredPosition = position;
-        },
+        const scrollElementIntoViewIfNecessary = (): void => {
+            const searchResultListContainer = document.getElementById("search-result-list-container") as
+                | HTMLDivElement
+                | undefined;
 
-        onMouseLeave(position: number): void {
-            if (this.currentlyHoveredPosition === position) {
-                this.currentlyHoveredPosition = undefined;
-            }
-        },
-    },
-
-    mounted(): void {
-        vueEventEmitter.on("UserInputArrowKeyPressed", (key) => {
-            this.currentlySelectedIndexChange(key);
-        });
-
-        vueEventEmitter.on("UserInputEnterPressed", (ctrlOrMetaPressed?: boolean) => {
-            const currentlySelectedItem = this.searchResultItems.find(
-                (searchResultItem, index) => index === this.currentlyHoveredPosition
+            const currentlySelectedElement = <HTMLDivElement | undefined>(
+                document.getElementById(`search-result-position-${currentlyHoveredPosition.value}`)
             );
 
-            if (currentlySelectedItem) {
-                ctrlOrMetaPressed
-                    ? this.openLocation(ObjectUtility.clone(currentlySelectedItem))
-                    : this.execute(ObjectUtility.clone(currentlySelectedItem));
+            if (searchResultListContainer && currentlySelectedElement) {
+                if (elementIsOutOfView(searchResultListContainer, currentlySelectedElement)) {
+                    currentlySelectedElement.scrollIntoView({ behavior: "smooth" });
+                }
             }
-        });
-    },
+        };
 
-    watch: {
-        searchResultItems() {
-            if (this.searchResultItems.length > 0) {
-                this.currentlyHoveredPosition = 0;
+        const currentlySelectedIndexChange = (direction: "ArrowUp" | "ArrowDown"): void => {
+            const minimumIndex = 0;
+            const maximumIndex = props.searchResultItems.length - 1;
+
+            if (currentlyHoveredPosition.value === undefined) {
+                currentlyHoveredPosition.value = 0;
+                return;
             }
-        },
+
+            if (direction === "ArrowUp") {
+                currentlyHoveredPosition.value =
+                    currentlyHoveredPosition.value === minimumIndex ? maximumIndex : currentlyHoveredPosition.value - 1;
+            }
+
+            if (direction === "ArrowDown") {
+                currentlyHoveredPosition.value =
+                    currentlyHoveredPosition.value === maximumIndex ? minimumIndex : currentlyHoveredPosition.value + 1;
+            }
+
+            scrollElementIntoViewIfNecessary();
+        };
+
+        watch(
+            () => props.searchResultItems,
+            () => {
+                if (props.searchResultItems.length > 0) {
+                    currentlyHoveredPosition.value = 0;
+                }
+            }
+        );
+
+        onMounted(() => {
+            vueEventEmitter.on("UserInputArrowKeyPressed", (key) => {
+                currentlySelectedIndexChange(key);
+            });
+
+            vueEventEmitter.on("UserInputEnterPressed", (ctrlOrMetaPressed?: boolean) => {
+                const currentlySelectedItem = props.searchResultItems.find(
+                    (_, index) => index === currentlyHoveredPosition.value
+                );
+
+                if (currentlySelectedItem) {
+                    ctrlOrMetaPressed
+                        ? openLocation(ObjectUtility.clone(currentlySelectedItem))
+                        : execute(ObjectUtility.clone(currentlySelectedItem));
+                }
+            });
+        });
+
+        return {
+            currentlyHoveredPosition,
+            currentlySelectedIndexChange,
+            execute,
+            onMouseEnter,
+            onMouseLeave,
+            openLocation,
+        };
     },
 });
 </script>

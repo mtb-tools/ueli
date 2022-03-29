@@ -10,7 +10,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import SidebarOptionGroupComponent from "./SidebarOptionGroup.vue";
 import { SidebarOptionGroup } from "../../SidebarOptionGroup";
 
@@ -19,32 +20,30 @@ export default defineComponent({
         SidebarOptionGroupComponent,
     },
 
-    data(): { optionGroups: SidebarOptionGroup[] } {
-        return {
-            optionGroups: [
-                {
-                    label: "ueli",
-                    key: "ueli",
-                    options: [
-                        {
-                            label: "General",
-                            path: "/general",
-                            icon: "bi-gear-wide-connected",
-                        },
-                        {
-                            label: "Search Engine",
-                            path: "/search-engine",
-                            icon: "bi-search",
-                        },
-                    ],
-                },
-            ],
-        };
-    },
+    setup() {
+        const router = useRouter();
 
-    methods: {
-        selectionChanged(groupKey: string, selectedIndex: number): void {
-            this.optionGroups.forEach((optionGroup) => {
+        const optionGroups = ref<SidebarOptionGroup[]>([
+            {
+                label: "ueli",
+                key: "ueli",
+                options: [
+                    {
+                        label: "General",
+                        path: "/general",
+                        icon: "bi-gear-wide-connected",
+                    },
+                    {
+                        label: "Search Engine",
+                        path: "/search-engine",
+                        icon: "bi-search",
+                    },
+                ],
+            },
+        ]);
+
+        const selectionChanged = (groupKey: string, selectedIndex: number): void => {
+            optionGroups.value.forEach((optionGroup) => {
                 if (optionGroup.key === groupKey) {
                     optionGroup.options.forEach((option, index) => {
                         const selected = index === selectedIndex;
@@ -52,24 +51,29 @@ export default defineComponent({
                     });
                 }
             });
-        },
+        };
 
-        registerNavigationEventListeners(): void {
-            this.$router.afterEach((navigatedTo) => {
-                this.optionGroups.forEach((optionGroup) => {
+        const registerNavigationEventListeners = (): void => {
+            router.afterEach((navigatedTo) => {
+                optionGroups.value.forEach((optionGroup) => {
                     optionGroup.options.forEach((option, index) => {
                         if (option.path === navigatedTo.path) {
-                            this.selectionChanged(optionGroup.key, index);
+                            selectionChanged(optionGroup.key, index);
                         }
                     });
                 });
             });
-        },
-    },
+        };
 
-    mounted(): void {
-        this.registerNavigationEventListeners();
-        this.$router.push("/general");
+        onMounted(() => {
+            registerNavigationEventListeners();
+            router.push("/general");
+        });
+
+        return {
+            optionGroups,
+            selectionChanged,
+        };
     },
 });
 </script>

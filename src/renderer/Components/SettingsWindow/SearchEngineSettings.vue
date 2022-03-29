@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import { IpcChannel } from "../../../common/IpcChannel";
 import { ObjectUtility } from "../../../common/ObjectUtility";
 import { Settings } from "../../../common/Settings";
@@ -47,10 +47,6 @@ import { NotificationData } from "../../NotificationData";
 import { NotificationType } from "../../NotificationType";
 import { vueEventEmitter } from "../../VueEventEmitter";
 import { UNumberInput, USliderInput, USetting, USettingList, UToggle } from "ueli-designsystem";
-
-interface Data {
-    settings: Settings;
-}
 
 export default defineComponent({
     components: {
@@ -61,48 +57,10 @@ export default defineComponent({
         UToggle,
     },
 
-    data(): Data {
-        return {
-            settings: this.Bridge.ipcRenderer.sendSync<unknown, Settings>(IpcChannel.GetSettings),
-        };
-    },
+    setup() {
+        const settings = ref<Settings>(window.Bridge.ipcRenderer.sendSync<unknown, Settings>(IpcChannel.GetSettings));
 
-    methods: {
-        async thresholdChanged(threshold: number): Promise<void> {
-            this.settings.searchEngineSettings.threshold = threshold;
-
-            try {
-                await this.saveSettings();
-                vueEventEmitter.emit("Notification", this.successfullySavedSettingsNotification());
-            } catch (error) {
-                vueEventEmitter.emit("Notification", this.failedToSaveSettingsNotification(error));
-            }
-        },
-
-        async rescanIntervalChanged(interval: number): Promise<void> {
-            this.settings.searchEngineSettings.automaticRescanIntervalInSeconds = interval;
-
-            try {
-                await this.saveSettings();
-                vueEventEmitter.emit("Notification", this.successfullySavedSettingsNotification());
-            } catch (error) {
-                vueEventEmitter.emit("Notification", this.failedToSaveSettingsNotification(error));
-            }
-        },
-
-        async toggleAutomaticRescanEnabled(): Promise<void> {
-            this.settings.searchEngineSettings.automaticRescanEnabled =
-                !this.settings.searchEngineSettings.automaticRescanEnabled;
-
-            try {
-                await this.saveSettings();
-                vueEventEmitter.emit("Notification", this.successfullySavedSettingsNotification());
-            } catch (error) {
-                vueEventEmitter.emit("Notification", this.failedToSaveSettingsNotification(error));
-            }
-        },
-
-        successfullySavedSettingsNotification(): NotificationData {
+        const successfullySavedSettingsNotification = (): NotificationData => {
             return {
                 message: "Settings have been updated",
                 autoHide: true,
@@ -110,23 +68,67 @@ export default defineComponent({
                 type: NotificationType.Success,
                 icon: "check",
             };
-        },
+        };
 
-        failedToSaveSettingsNotification(error: unknown): NotificationData {
+        const failedToSaveSettingsNotification = (error: unknown): NotificationData => {
             return {
                 message: `Failed to save settings. Reason ${error}`,
                 autoHide: false,
                 type: NotificationType.Danger,
                 icon: "exclamation-triangle-fill",
             };
-        },
+        };
 
-        saveSettings(): Promise<void> {
-            return this.Bridge.ipcRenderer.invoke<Settings, void>(
+        const saveSettings = (): Promise<void> => {
+            return window.Bridge.ipcRenderer.invoke<Settings, void>(
                 IpcChannel.UpdateSettings,
-                ObjectUtility.clone<Settings>(this.settings)
+                ObjectUtility.clone<Settings>(settings.value)
             );
-        },
+        };
+
+        const thresholdChanged = async (threshold: number): Promise<void> => {
+            settings.value.searchEngineSettings.threshold = threshold;
+
+            try {
+                await saveSettings();
+                vueEventEmitter.emit("Notification", successfullySavedSettingsNotification());
+            } catch (error) {
+                vueEventEmitter.emit("Notification", failedToSaveSettingsNotification(error));
+            }
+        };
+
+        const rescanIntervalChanged = async (interval: number): Promise<void> => {
+            settings.value.searchEngineSettings.automaticRescanIntervalInSeconds = interval;
+
+            try {
+                await saveSettings();
+                vueEventEmitter.emit("Notification", successfullySavedSettingsNotification());
+            } catch (error) {
+                vueEventEmitter.emit("Notification", failedToSaveSettingsNotification(error));
+            }
+        };
+
+        const toggleAutomaticRescanEnabled = async (): Promise<void> => {
+            settings.value.searchEngineSettings.automaticRescanEnabled =
+                !settings.value.searchEngineSettings.automaticRescanEnabled;
+
+            try {
+                await saveSettings();
+                vueEventEmitter.emit("Notification", successfullySavedSettingsNotification());
+            } catch (error) {
+                vueEventEmitter.emit("Notification", failedToSaveSettingsNotification(error));
+            }
+        };
+
+        return {
+            failedToSaveSettingsNotification,
+            rescanIntervalChanged,
+            saveSettings,
+            settings,
+            successfullySavedSettingsNotification,
+            thresholdChanged,
+            toggleAutomaticRescanEnabled,
+        };
     },
 });
 </script>

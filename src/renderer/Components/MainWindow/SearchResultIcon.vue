@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, computed } from "vue";
 import { SearchResultItemIcon } from "../../../common/SearchResult/SearchResultItemIcon";
 import { SearchResultItemIconType } from "../../../common/SearchResult/SearchResultItemIconType";
 import FilePathSearchResultIcon from "./FilePathSearchResultIcon.vue";
@@ -25,14 +25,14 @@ export default defineComponent({
         FilePathSearchResultIcon,
     },
 
-    computed: {
-        isFilePathIcon(): boolean {
-            return this.icon.type === SearchResultItemIconType.FilePath;
-        },
+    setup({ icon }) {
+        const isFilePathIcon = computed(() => icon.type === SearchResultItemIconType.FilePath);
+        const isDataUrlIcon = computed(() => icon.type === SearchResultItemIconType.DataUrl);
 
-        isDataUrlIcon(): boolean {
-            return this.icon.type === SearchResultItemIconType.DataUrl;
-        },
+        return {
+            isDataUrlIcon,
+            isFilePathIcon,
+        };
     },
 });
 </script>

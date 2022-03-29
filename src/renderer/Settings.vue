@@ -25,12 +25,6 @@ export default defineComponent({
         Sidebar,
         Notifier,
     },
-
-    methods: {
-        navigateTo(path: string): void {
-            this.$router.push(path);
-        },
-    },
 });
 </script>
 

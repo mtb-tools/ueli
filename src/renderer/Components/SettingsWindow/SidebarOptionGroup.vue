@@ -37,10 +37,10 @@ export default defineComponent({
         },
     },
 
-    methods: {
-        select(selectedIndex: number): void {
-            this.$emit("selectionChanged", this.optionGroup.key, selectedIndex);
-        },
+    setup({ optionGroup }, { emit }) {
+        return {
+            select: (selectedIndex: number): void => emit("selectionChanged", optionGroup.key, selectedIndex),
+        };
     },
 });
 </script>

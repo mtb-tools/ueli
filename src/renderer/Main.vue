@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import UserInput from "./Components/MainWindow/UserInput.vue";
 import SearchResultList from "./Components/MainWindow/SearchResultList.vue";
 import { vueEventEmitter } from "./VueEventEmitter";
@@ -24,24 +24,40 @@ import { IpcChannel } from "../common/IpcChannel";
 import "ueli-designsystem/variables.css";
 import "./Styles/shared.css";
 
-interface Data {
-    searchResultItems: SearchResultItem[];
-}
-
 export default defineComponent({
     components: {
         SearchResultList,
         UserInput,
     },
 
-    data(): Data {
-        return {
-            searchResultItems: [],
-        };
-    },
+    setup() {
+        const searchResultItems = ref<SearchResultItem[]>([]);
 
-    methods: {
-        onGlobalKeyDown(keyboardEvent: KeyboardEvent): void {
+        const handleError = (error: unknown): void => console.error(`Handled error: ${error}`);
+
+        const onExecutionRequested = async (searchResultItem: SearchResultItem): Promise<void> => {
+            try {
+                await window.Bridge.ipcRenderer.invoke(IpcChannel.Execute, searchResultItem);
+            } catch (error) {
+                handleError(error);
+            }
+        };
+
+        const onOpenLocationRequested = async (searchResultItem: SearchResultItem): Promise<void> => {
+            try {
+                await window.Bridge.ipcRenderer.invoke(IpcChannel.OpenLocation, searchResultItem);
+            } catch (error) {
+                handleError(error);
+            }
+        };
+
+        const registerIpcEventListeners = (): void =>
+            window.Bridge.ipcRenderer.on(IpcChannel.MainWindowShown, () => vueEventEmitter.emit("MainWindowShown"));
+
+        const registerVueEventListeners = (): void =>
+            vueEventEmitter.on("GlobalKeyDown", (event: KeyboardEvent) => onGlobalKeyDown(event));
+
+        const onGlobalKeyDown = (keyboardEvent: KeyboardEvent): void => {
             switch (keyboardEvent.key) {
                 case "ArrowUp":
                 case "ArrowDown":
@@ -56,54 +72,36 @@ export default defineComponent({
 
                 case "Escape":
                     keyboardEvent.preventDefault();
-                    this.Bridge.ipcRenderer.send(IpcChannel.EscapePressed);
+                    window.Bridge.ipcRenderer.send(IpcChannel.EscapePressed);
                     break;
             }
-        },
+        };
 
-        async onSearchTermChanged(searchTerm: string): Promise<void> {
+        const onSearchTermChanged = async (searchTerm: string): Promise<void> => {
             try {
-                this.searchResultItems = await this.Bridge.ipcRenderer.invoke<string, SearchResultItem[]>(
+                searchResultItems.value = await window.Bridge.ipcRenderer.invoke<string, SearchResultItem[]>(
                     IpcChannel.Search,
                     searchTerm
                 );
             } catch (error) {
-                this.handleError(error);
+                handleError(error);
             }
-        },
+        };
 
-        async onExecutionRequested(searchResultItem: SearchResultItem): Promise<void> {
-            try {
-                await this.Bridge.ipcRenderer.invoke(IpcChannel.Execute, searchResultItem);
-            } catch (error) {
-                this.handleError(error);
-            }
-        },
+        onMounted(() => {
+            registerIpcEventListeners();
+            registerVueEventListeners();
+        });
 
-        async onOpenLocationRequested(searchResultItem: SearchResultItem): Promise<void> {
-            try {
-                await this.Bridge.ipcRenderer.invoke(IpcChannel.OpenLocation, searchResultItem);
-            } catch (error) {
-                this.handleError(error);
-            }
-        },
-
-        registerIpcEventListeners(): void {
-            this.Bridge.ipcRenderer.on(IpcChannel.MainWindowShown, () => vueEventEmitter.emit("MainWindowShown"));
-        },
-
-        registerVueEventListeners(): void {
-            vueEventEmitter.on("GlobalKeyDown", (event: KeyboardEvent) => this.onGlobalKeyDown(event));
-        },
-
-        handleError(error: unknown): void {
-            console.error(`Handled error: ${error}`);
-        },
-    },
-
-    mounted(): void {
-        this.registerIpcEventListeners();
-        this.registerVueEventListeners();
+        return {
+            onExecutionRequested,
+            onGlobalKeyDown,
+            onOpenLocationRequested,
+            onSearchTermChanged,
+            registerIpcEventListeners,
+            registerVueEventListeners,
+            searchResultItems,
+        };
     },
 });
 </script>

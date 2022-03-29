@@ -13,52 +13,50 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { NotificationData } from "../../NotificationData";
 import { vueEventEmitter } from "../../VueEventEmitter";
 import { UNotification } from "ueli-designsystem";
-
-interface Data {
-    notifications: NotificationData[];
-}
 
 export default defineComponent({
     components: {
         UNotification,
     },
 
-    data(): Data {
-        return {
-            notifications: [],
-        };
-    },
+    setup() {
+        const notifications = ref<NotificationData[]>([]);
 
-    methods: {
-        addNotification(notification: NotificationData): void {
+        const removeNotification = (index: number): void => {
+            notifications.value.splice(index, 1);
+        };
+
+        const addNotification = (notification: NotificationData): void => {
             const defaultNotificationDurationInMs = 5000;
-            const index = this.notifications.push(notification);
+            const index = notifications.value.push(notification);
 
             if (notification.autoHide) {
                 setTimeout(
-                    () => this.removeNotification(index - 1),
+                    () => removeNotification(index - 1),
                     notification.autoHideDuration || defaultNotificationDurationInMs
                 );
             }
-        },
+        };
 
-        removeNotification(index: number): void {
-            this.notifications.splice(index, 1);
-        },
-    },
+        onMounted(() =>
+            vueEventEmitter.on("Notification", (notification?: NotificationData) => {
+                if (!notification) {
+                    return;
+                }
 
-    mounted() {
-        vueEventEmitter.on("Notification", (notification?: NotificationData) => {
-            if (!notification) {
-                return;
-            }
+                addNotification(notification);
+            })
+        );
 
-            this.addNotification(notification);
-        });
+        return {
+            addNotification,
+            notifications,
+            removeNotification,
+        };
     },
 });
 </script>
