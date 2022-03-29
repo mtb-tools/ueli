@@ -10,7 +10,7 @@
                         :step="0.1"
                         :value="settings.searchEngineSettings.threshold"
                         :displayValue="true"
-                        @valueChanged="thresholdChanged"
+                        @valueChanged="updateThreshold"
                     />
                 </template>
             </USetting>
@@ -20,7 +20,7 @@
                 <template v-slot:body>
                     <UToggle
                         :toggled="settings.searchEngineSettings.automaticRescanEnabled"
-                        @toggle="toggleAutomaticRescanEnabled"
+                        @toggle="updateAutomaticRescanEnabled"
                     />
                 </template>
             </USetting>
@@ -30,7 +30,7 @@
                 <template v-slot:body>
                     <UNumberInput
                         :value="settings.searchEngineSettings.automaticRescanIntervalInSeconds"
-                        @changed="rescanIntervalChanged"
+                        @changed="updateRescanInterval"
                     />
                 </template>
             </USetting>
@@ -41,68 +41,28 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { IpcChannel } from "../../../common/IpcChannel";
-import { ObjectUtility } from "../../../common/ObjectUtility";
 import { Settings } from "../../../common/Settings";
-import { NotificationData } from "../../NotificationData";
-import { NotificationType } from "../../NotificationType";
-import { vueEventEmitter } from "../../VueEventEmitter";
 import { UNumberInput, USliderInput, USetting, USettingList, UToggle } from "ueli-designsystem";
+import { saveSettings } from "./Actions";
+import { ObjectUtility } from "../../../common/ObjectUtility";
 
 const settings = ref<Settings>(window.Bridge.ipcRenderer.sendSync<unknown, Settings>(IpcChannel.GetSettings));
 
-const successfullySavedSettingsNotification = (): NotificationData => ({
-    message: "Settings have been updated",
-    autoHide: true,
-    autoHideDuration: 2500,
-    type: NotificationType.Success,
-    icon: "check",
-});
+const save = async (): Promise<void> => saveSettings(ObjectUtility.clone<Settings>(settings.value));
 
-const failedToSaveSettingsNotification = (error: unknown): NotificationData => ({
-    message: `Failed to save settings. Reason ${error}`,
-    autoHide: false,
-    type: NotificationType.Danger,
-    icon: "exclamation-triangle-fill",
-});
-
-const saveSettings = (): Promise<void> =>
-    window.Bridge.ipcRenderer.invoke<Settings, void>(
-        IpcChannel.UpdateSettings,
-        ObjectUtility.clone<Settings>(settings.value)
-    );
-
-const thresholdChanged = async (threshold: number): Promise<void> => {
+const updateThreshold = async (threshold: number): Promise<void> => {
     settings.value.searchEngineSettings.threshold = threshold;
-
-    try {
-        await saveSettings();
-        vueEventEmitter.emit("Notification", successfullySavedSettingsNotification());
-    } catch (error) {
-        vueEventEmitter.emit("Notification", failedToSaveSettingsNotification(error));
-    }
+    save();
 };
 
-const rescanIntervalChanged = async (interval: number): Promise<void> => {
+const updateRescanInterval = async (interval: number): Promise<void> => {
     settings.value.searchEngineSettings.automaticRescanIntervalInSeconds = interval;
-
-    try {
-        await saveSettings();
-        vueEventEmitter.emit("Notification", successfullySavedSettingsNotification());
-    } catch (error) {
-        vueEventEmitter.emit("Notification", failedToSaveSettingsNotification(error));
-    }
+    save();
 };
 
-const toggleAutomaticRescanEnabled = async (): Promise<void> => {
-    settings.value.searchEngineSettings.automaticRescanEnabled =
-        !settings.value.searchEngineSettings.automaticRescanEnabled;
-
-    try {
-        await saveSettings();
-        vueEventEmitter.emit("Notification", successfullySavedSettingsNotification());
-    } catch (error) {
-        vueEventEmitter.emit("Notification", failedToSaveSettingsNotification(error));
-    }
+const updateAutomaticRescanEnabled = async (enabled: boolean): Promise<void> => {
+    settings.value.searchEngineSettings.automaticRescanEnabled = enabled;
+    save();
 };
 </script>
 
