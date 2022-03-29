@@ -7,18 +7,9 @@ import SearchEngineSettings from "./Components/SettingsWindow/SearchEngineSettin
 const router = createRouter({
     history: createWebHashHistory(),
     routes: [
-        {
-            path: "/",
-            component: GeneralSettings,
-        },
-        {
-            path: "/general",
-            component: GeneralSettings,
-        },
-        {
-            path: "/search-engine",
-            component: SearchEngineSettings,
-        },
+        { path: "/", component: GeneralSettings },
+        { path: "/general", component: GeneralSettings },
+        { path: "/search-engine", component: SearchEngineSettings },
     ],
 });
 
