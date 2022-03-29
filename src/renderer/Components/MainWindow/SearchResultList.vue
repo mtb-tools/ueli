@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch, defineEmits } from "vue";
+import { ref, onMounted, watch, defineEmits, defineProps } from "vue";
 import SearchResult from "./SearchResult.vue";
 import { SearchResultItem } from "../../../common/SearchResult/SearchResultItem";
 import { vueEventEmitter } from "../../VueEventEmitter";

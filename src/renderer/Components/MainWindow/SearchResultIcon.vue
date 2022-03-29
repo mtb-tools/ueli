@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, defineProps } from "vue";
 import { SearchResultItemIcon } from "../../../common/SearchResult/SearchResultItemIcon";
 import { SearchResultItemIconType } from "../../../common/SearchResult/SearchResultItemIconType";
 import FilePathSearchResultIcon from "./FilePathSearchResultIcon.vue";

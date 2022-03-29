@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, defineEmits, defineProps } from "vue";
 import { SearchResultItem } from "../../../common/SearchResult/SearchResultItem";
 import { ObjectUtility } from "../../../common/ObjectUtility";
 import SearchResultIcon from "./SearchResultIcon.vue";
