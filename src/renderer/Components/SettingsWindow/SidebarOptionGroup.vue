@@ -19,30 +19,19 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from "vue";
+<script lang="ts" setup>
+import { defineProps, defineEmits } from "vue";
 import { SidebarOptionGroup } from "../../SidebarOptionGroup";
 
-export default defineComponent({
-    emits: {
-        selectionChanged(optionGroupKey: string, selectedIndex: number): boolean {
-            return optionGroupKey.length > 0 && selectedIndex >= 0;
-        },
-    },
+const { optionGroup } = defineProps<{
+    optionGroup: SidebarOptionGroup;
+}>();
 
-    props: {
-        optionGroup: {
-            type: <PropType<SidebarOptionGroup>>Object,
-            required: true,
-        },
-    },
+const emit = defineEmits<{
+    (e: "selectionChanged", key: string, selectedIndex: number): void;
+}>();
 
-    setup({ optionGroup }, { emit }) {
-        return {
-            select: (selectedIndex: number): void => emit("selectionChanged", optionGroup.key, selectedIndex),
-        };
-    },
-});
+const select = (selectedIndex: number): void => emit("selectionChanged", optionGroup.key, selectedIndex);
 </script>
 
 <style scoped>

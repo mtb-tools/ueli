@@ -38,8 +38,8 @@
     </USettingList>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script lang="ts" setup>
+import { ref } from "vue";
 import { IpcChannel } from "../../../common/IpcChannel";
 import { ObjectUtility } from "../../../common/ObjectUtility";
 import { Settings } from "../../../common/Settings";
@@ -48,89 +48,62 @@ import { NotificationType } from "../../NotificationType";
 import { vueEventEmitter } from "../../VueEventEmitter";
 import { UNumberInput, USliderInput, USetting, USettingList, UToggle } from "ueli-designsystem";
 
-export default defineComponent({
-    components: {
-        UNumberInput,
-        USetting,
-        USettingList,
-        USliderInput,
-        UToggle,
-    },
+const settings = ref<Settings>(window.Bridge.ipcRenderer.sendSync<unknown, Settings>(IpcChannel.GetSettings));
 
-    setup() {
-        const settings = ref<Settings>(window.Bridge.ipcRenderer.sendSync<unknown, Settings>(IpcChannel.GetSettings));
-
-        const successfullySavedSettingsNotification = (): NotificationData => {
-            return {
-                message: "Settings have been updated",
-                autoHide: true,
-                autoHideDuration: 2500,
-                type: NotificationType.Success,
-                icon: "check",
-            };
-        };
-
-        const failedToSaveSettingsNotification = (error: unknown): NotificationData => {
-            return {
-                message: `Failed to save settings. Reason ${error}`,
-                autoHide: false,
-                type: NotificationType.Danger,
-                icon: "exclamation-triangle-fill",
-            };
-        };
-
-        const saveSettings = (): Promise<void> => {
-            return window.Bridge.ipcRenderer.invoke<Settings, void>(
-                IpcChannel.UpdateSettings,
-                ObjectUtility.clone<Settings>(settings.value)
-            );
-        };
-
-        const thresholdChanged = async (threshold: number): Promise<void> => {
-            settings.value.searchEngineSettings.threshold = threshold;
-
-            try {
-                await saveSettings();
-                vueEventEmitter.emit("Notification", successfullySavedSettingsNotification());
-            } catch (error) {
-                vueEventEmitter.emit("Notification", failedToSaveSettingsNotification(error));
-            }
-        };
-
-        const rescanIntervalChanged = async (interval: number): Promise<void> => {
-            settings.value.searchEngineSettings.automaticRescanIntervalInSeconds = interval;
-
-            try {
-                await saveSettings();
-                vueEventEmitter.emit("Notification", successfullySavedSettingsNotification());
-            } catch (error) {
-                vueEventEmitter.emit("Notification", failedToSaveSettingsNotification(error));
-            }
-        };
-
-        const toggleAutomaticRescanEnabled = async (): Promise<void> => {
-            settings.value.searchEngineSettings.automaticRescanEnabled =
-                !settings.value.searchEngineSettings.automaticRescanEnabled;
-
-            try {
-                await saveSettings();
-                vueEventEmitter.emit("Notification", successfullySavedSettingsNotification());
-            } catch (error) {
-                vueEventEmitter.emit("Notification", failedToSaveSettingsNotification(error));
-            }
-        };
-
-        return {
-            failedToSaveSettingsNotification,
-            rescanIntervalChanged,
-            saveSettings,
-            settings,
-            successfullySavedSettingsNotification,
-            thresholdChanged,
-            toggleAutomaticRescanEnabled,
-        };
-    },
+const successfullySavedSettingsNotification = (): NotificationData => ({
+    message: "Settings have been updated",
+    autoHide: true,
+    autoHideDuration: 2500,
+    type: NotificationType.Success,
+    icon: "check",
 });
+
+const failedToSaveSettingsNotification = (error: unknown): NotificationData => ({
+    message: `Failed to save settings. Reason ${error}`,
+    autoHide: false,
+    type: NotificationType.Danger,
+    icon: "exclamation-triangle-fill",
+});
+
+const saveSettings = (): Promise<void> =>
+    window.Bridge.ipcRenderer.invoke<Settings, void>(
+        IpcChannel.UpdateSettings,
+        ObjectUtility.clone<Settings>(settings.value)
+    );
+
+const thresholdChanged = async (threshold: number): Promise<void> => {
+    settings.value.searchEngineSettings.threshold = threshold;
+
+    try {
+        await saveSettings();
+        vueEventEmitter.emit("Notification", successfullySavedSettingsNotification());
+    } catch (error) {
+        vueEventEmitter.emit("Notification", failedToSaveSettingsNotification(error));
+    }
+};
+
+const rescanIntervalChanged = async (interval: number): Promise<void> => {
+    settings.value.searchEngineSettings.automaticRescanIntervalInSeconds = interval;
+
+    try {
+        await saveSettings();
+        vueEventEmitter.emit("Notification", successfullySavedSettingsNotification());
+    } catch (error) {
+        vueEventEmitter.emit("Notification", failedToSaveSettingsNotification(error));
+    }
+};
+
+const toggleAutomaticRescanEnabled = async (): Promise<void> => {
+    settings.value.searchEngineSettings.automaticRescanEnabled =
+        !settings.value.searchEngineSettings.automaticRescanEnabled;
+
+    try {
+        await saveSettings();
+        vueEventEmitter.emit("Notification", successfullySavedSettingsNotification());
+    } catch (error) {
+        vueEventEmitter.emit("Notification", failedToSaveSettingsNotification(error));
+    }
+};
 </script>
 
 <style scoped>

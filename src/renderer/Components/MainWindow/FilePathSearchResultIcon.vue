@@ -4,18 +4,11 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from "vue";
+<script lang="ts" setup>
+import { defineProps } from "vue";
 import { LocalFilePathSearchResultItemIcon } from "../../../common/SearchResult/LocalFilePathSearchResultItemIcon";
 
-export default defineComponent({
-    props: {
-        icon: {
-            type: <PropType<LocalFilePathSearchResultItemIcon>>Object,
-            required: true,
-        },
-    },
-});
+defineProps<{ icon: LocalFilePathSearchResultItemIcon }>();
 </script>
 
 <style scoped>

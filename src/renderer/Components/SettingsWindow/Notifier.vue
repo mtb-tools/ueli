@@ -5,60 +5,44 @@
             v-for="(notification, index) in notifications"
             :key="index"
             :message="notification.message"
-            :type="notification.type"
+            :type="notification.type?.toString()"
             :icon="notification.icon"
             @close="removeNotification(index)"
         />
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
+<script lang="ts" setup>
+import { ref, onMounted } from "vue";
 import { NotificationData } from "../../NotificationData";
 import { vueEventEmitter } from "../../VueEventEmitter";
 import { UNotification } from "ueli-designsystem";
 
-export default defineComponent({
-    components: {
-        UNotification,
-    },
+const notifications = ref<NotificationData[]>([]);
 
-    setup() {
-        const notifications = ref<NotificationData[]>([]);
+const removeNotification = (index: number) => notifications.value.splice(index, 1);
 
-        const removeNotification = (index: number): void => {
-            notifications.value.splice(index, 1);
-        };
+const addNotification = (notification: NotificationData): void => {
+    const defaultNotificationDurationInMs = 5000;
+    const index = notifications.value.push(notification);
 
-        const addNotification = (notification: NotificationData): void => {
-            const defaultNotificationDurationInMs = 5000;
-            const index = notifications.value.push(notification);
-
-            if (notification.autoHide) {
-                setTimeout(
-                    () => removeNotification(index - 1),
-                    notification.autoHideDuration || defaultNotificationDurationInMs
-                );
-            }
-        };
-
-        onMounted(() =>
-            vueEventEmitter.on("Notification", (notification?: NotificationData) => {
-                if (!notification) {
-                    return;
-                }
-
-                addNotification(notification);
-            })
+    if (notification.autoHide) {
+        setTimeout(
+            () => removeNotification(index - 1),
+            notification.autoHideDuration || defaultNotificationDurationInMs
         );
+    }
+};
 
-        return {
-            addNotification,
-            notifications,
-            removeNotification,
-        };
-    },
-});
+onMounted(() =>
+    vueEventEmitter.on("Notification", (notification?: NotificationData) => {
+        if (!notification) {
+            return;
+        }
+
+        addNotification(notification);
+    })
+);
 </script>
 
 <style scoped>

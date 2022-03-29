@@ -4,18 +4,11 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from "vue";
+<script lang="ts" setup>
+import { defineProps } from "vue";
 import { DataUrlSearchResultItemIcon } from "../../../common/SearchResult/DataUrlSearchResultItemIcon";
 
-export default defineComponent({
-    props: {
-        icon: {
-            type: <PropType<DataUrlSearchResultItemIcon>>Object,
-            required: true,
-        },
-    },
-});
+defineProps<{ icon: DataUrlSearchResultItemIcon }>();
 </script>
 
 <style scoped>

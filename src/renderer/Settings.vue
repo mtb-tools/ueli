@@ -12,20 +12,11 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts" setup>
 import Sidebar from "./Components/SettingsWindow/Sidebar.vue";
 import Notifier from "./Components/SettingsWindow/Notifier.vue";
-
 import "ueli-designsystem/variables.css";
 import "./Styles/shared.css";
-
-export default defineComponent({
-    components: {
-        Sidebar,
-        Notifier,
-    },
-});
 </script>
 
 <style>
