@@ -1,14 +1,14 @@
 <template>
     <div>
-        <img class="icon" :src="icon.filePath" />
+        <img class="icon" :src="filePath" />
     </div>
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
+import { defineProps, computed } from "vue";
 import { LocalFilePathSearchResultItemIcon } from "../../../common/SearchResult/LocalFilePathSearchResultItemIcon";
-
-defineProps<{ icon: LocalFilePathSearchResultItemIcon }>();
+const { icon } = defineProps<{ icon: LocalFilePathSearchResultItemIcon }>();
+const filePath = computed<string>(() => icon.filePath);
 </script>
 
 <style scoped>

@@ -1,14 +1,15 @@
 <template>
     <div>
-        <img class="icon" :src="icon.dataUrl" />
+        <img class="icon" :src="dataUrl" />
     </div>
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
+import { defineProps, computed } from "vue";
 import { DataUrlSearchResultItemIcon } from "../../../common/SearchResult/DataUrlSearchResultItemIcon";
 
-defineProps<{ icon: DataUrlSearchResultItemIcon }>();
+const { icon } = defineProps<{ icon: DataUrlSearchResultItemIcon }>();
+const dataUrl = computed<string>(() => icon.dataUrl);
 </script>
 
 <style scoped>

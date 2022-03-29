@@ -27,7 +27,7 @@ import { SearchResultItem } from "../../../common/SearchResult/SearchResultItem"
 import { ObjectUtility } from "../../../common/ObjectUtility";
 import SearchResultIcon from "./SearchResultIcon.vue";
 
-const { item, position, hovered } = defineProps<{
+const { item, position } = defineProps<{
     item: SearchResultItem;
     position: number;
     hovered: boolean;

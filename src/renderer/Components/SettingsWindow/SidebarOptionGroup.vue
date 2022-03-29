@@ -10,7 +10,7 @@
                 class="option"
                 :class="{ selected: option.selected }"
                 :to="option.path"
-                @click="select(index)"
+                @click="selectIndex(index)"
             >
                 <i v-if="option.icon !== undefined" class="option-icon bi" :class="option.icon"></i>
                 {{ option.label }}
@@ -31,7 +31,7 @@ const emit = defineEmits<{
     (e: "selectionChanged", key: string, selectedIndex: number): void;
 }>();
 
-const select = (selectedIndex: number): void => emit("selectionChanged", optionGroup.key, selectedIndex);
+const selectIndex = (selectedIndex: number): void => emit("selectionChanged", optionGroup.key, selectedIndex);
 </script>
 
 <style scoped>
