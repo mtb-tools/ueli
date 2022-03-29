@@ -15,47 +15,33 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, onMounted, watch } from "vue";
+<script lang="ts" setup>
+import { ref, onMounted, watch, defineEmits } from "vue";
 import { vueEventEmitter } from "../../VueEventEmitter";
 
-export default defineComponent({
-    emits: {
-        searchTermChanged(searchTerm: string): boolean {
-            return searchTerm !== undefined;
-        },
-    },
+const emit = defineEmits<{
+    (e: "searchTermChanged", searchTerm: string): void;
+}>();
 
-    setup(_, { emit }) {
-        const isFocussed = ref<boolean>(false);
-        const searchTerm = ref<string>("");
-        const userInputRef = ref<HTMLInputElement | null>(null);
+const isFocussed = ref<boolean>(false);
+const searchTerm = ref<string>("");
+const userInputRef = ref<HTMLInputElement | null>(null);
 
-        const focusOnUserInput = (): void => userInputRef.value?.focus();
+const focusOnUserInput = (): void => userInputRef.value?.focus();
 
-        const onFocus = (): void => {
-            isFocussed.value = true;
-        };
+const onFocus = (): void => {
+    isFocussed.value = true;
+};
 
-        const onBlur = (): void => {
-            isFocussed.value = false;
-        };
+const onBlur = (): void => {
+    isFocussed.value = false;
+};
 
-        const registerVueEventListeners = (): void => vueEventEmitter.on("MainWindowShown", () => focusOnUserInput());
+const registerVueEventListeners = (): void => vueEventEmitter.on("MainWindowShown", () => focusOnUserInput());
 
-        onMounted(() => registerVueEventListeners());
+onMounted(() => registerVueEventListeners());
 
-        watch(searchTerm, () => emit("searchTermChanged", searchTerm.value));
-
-        return {
-            isFocussed,
-            onBlur,
-            onFocus,
-            searchTerm,
-            userInputRef,
-        };
-    },
-});
+watch(searchTerm, () => emit("searchTermChanged", searchTerm.value));
 </script>
 
 <style scoped>

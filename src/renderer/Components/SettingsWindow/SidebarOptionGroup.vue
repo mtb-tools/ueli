@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, defineEmits } from "vue";
+import { defineEmits } from "vue";
 import { SidebarOptionGroup } from "../../SidebarOptionGroup";
 
 const { optionGroup } = defineProps<{

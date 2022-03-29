@@ -13,8 +13,8 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
+<script lang="ts" setup>
+import { ref, onMounted } from "vue";
 import UserInput from "./Components/MainWindow/UserInput.vue";
 import SearchResultList from "./Components/MainWindow/SearchResultList.vue";
 import { vueEventEmitter } from "./VueEventEmitter";
@@ -24,85 +24,66 @@ import { IpcChannel } from "../common/IpcChannel";
 import "ueli-designsystem/variables.css";
 import "./Styles/shared.css";
 
-export default defineComponent({
-    components: {
-        SearchResultList,
-        UserInput,
-    },
+const searchResultItems = ref<SearchResultItem[]>([]);
 
-    setup() {
-        const searchResultItems = ref<SearchResultItem[]>([]);
+const handleError = (error: unknown): void => console.error(`Handled error: ${error}`);
 
-        const handleError = (error: unknown): void => console.error(`Handled error: ${error}`);
+const onExecutionRequested = async (searchResultItem: SearchResultItem): Promise<void> => {
+    try {
+        await window.Bridge.ipcRenderer.invoke(IpcChannel.Execute, searchResultItem);
+    } catch (error) {
+        handleError(error);
+    }
+};
 
-        const onExecutionRequested = async (searchResultItem: SearchResultItem): Promise<void> => {
-            try {
-                await window.Bridge.ipcRenderer.invoke(IpcChannel.Execute, searchResultItem);
-            } catch (error) {
-                handleError(error);
-            }
-        };
+const onOpenLocationRequested = async (searchResultItem: SearchResultItem): Promise<void> => {
+    try {
+        await window.Bridge.ipcRenderer.invoke(IpcChannel.OpenLocation, searchResultItem);
+    } catch (error) {
+        handleError(error);
+    }
+};
 
-        const onOpenLocationRequested = async (searchResultItem: SearchResultItem): Promise<void> => {
-            try {
-                await window.Bridge.ipcRenderer.invoke(IpcChannel.OpenLocation, searchResultItem);
-            } catch (error) {
-                handleError(error);
-            }
-        };
+const registerIpcEventListeners = (): void =>
+    window.Bridge.ipcRenderer.on(IpcChannel.MainWindowShown, () => vueEventEmitter.emit("MainWindowShown"));
 
-        const registerIpcEventListeners = (): void =>
-            window.Bridge.ipcRenderer.on(IpcChannel.MainWindowShown, () => vueEventEmitter.emit("MainWindowShown"));
+const registerVueEventListeners = (): void =>
+    vueEventEmitter.on("GlobalKeyDown", (event: KeyboardEvent) => onGlobalKeyDown(event));
 
-        const registerVueEventListeners = (): void =>
-            vueEventEmitter.on("GlobalKeyDown", (event: KeyboardEvent) => onGlobalKeyDown(event));
+const onGlobalKeyDown = (keyboardEvent: KeyboardEvent): void => {
+    switch (keyboardEvent.key) {
+        case "ArrowUp":
+        case "ArrowDown":
+            keyboardEvent.preventDefault();
+            vueEventEmitter.emit("UserInputArrowKeyPressed", keyboardEvent.key);
+            break;
 
-        const onGlobalKeyDown = (keyboardEvent: KeyboardEvent): void => {
-            switch (keyboardEvent.key) {
-                case "ArrowUp":
-                case "ArrowDown":
-                    keyboardEvent.preventDefault();
-                    vueEventEmitter.emit("UserInputArrowKeyPressed", keyboardEvent.key);
-                    break;
+        case "Enter":
+            keyboardEvent.preventDefault();
+            vueEventEmitter.emit("UserInputEnterPressed", keyboardEvent.ctrlKey || keyboardEvent.metaKey);
+            break;
 
-                case "Enter":
-                    keyboardEvent.preventDefault();
-                    vueEventEmitter.emit("UserInputEnterPressed", keyboardEvent.ctrlKey || keyboardEvent.metaKey);
-                    break;
+        case "Escape":
+            keyboardEvent.preventDefault();
+            window.Bridge.ipcRenderer.send(IpcChannel.EscapePressed);
+            break;
+    }
+};
 
-                case "Escape":
-                    keyboardEvent.preventDefault();
-                    window.Bridge.ipcRenderer.send(IpcChannel.EscapePressed);
-                    break;
-            }
-        };
+const onSearchTermChanged = async (searchTerm: string): Promise<void> => {
+    try {
+        searchResultItems.value = await window.Bridge.ipcRenderer.invoke<string, SearchResultItem[]>(
+            IpcChannel.Search,
+            searchTerm
+        );
+    } catch (error) {
+        handleError(error);
+    }
+};
 
-        const onSearchTermChanged = async (searchTerm: string): Promise<void> => {
-            try {
-                searchResultItems.value = await window.Bridge.ipcRenderer.invoke<string, SearchResultItem[]>(
-                    IpcChannel.Search,
-                    searchTerm
-                );
-            } catch (error) {
-                handleError(error);
-            }
-        };
-
-        onMounted(() => {
-            registerIpcEventListeners();
-            registerVueEventListeners();
-        });
-
-        return {
-            onExecutionRequested,
-            onGlobalKeyDown,
-            onOpenLocationRequested,
-            onSearchTermChanged,
-            registerIpcEventListeners,
-            registerVueEventListeners,
-            searchResultItems,
-        };
-    },
+onMounted(() => {
+    registerIpcEventListeners();
+    registerVueEventListeners();
 });
 </script>
 

@@ -21,70 +21,33 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType, computed } from "vue";
+<script lang="ts" setup>
+import { computed } from "vue";
 import { SearchResultItem } from "../../../common/SearchResult/SearchResultItem";
 import { ObjectUtility } from "../../../common/ObjectUtility";
 import SearchResultIcon from "./SearchResultIcon.vue";
 
-export default defineComponent({
-    emits: {
-        openLocation(item: SearchResultItem): boolean {
-            return item !== undefined;
-        },
+const { item, position, hovered } = defineProps<{
+    item: SearchResultItem;
+    position: number;
+    hovered: boolean;
+}>();
 
-        execute(item: SearchResultItem): boolean {
-            return item !== undefined;
-        },
+const emit = defineEmits<{
+    (e: "openLocation", item: SearchResultItem): void;
+    (e: "execute", item: SearchResultItem): void;
+    (e: "mouseenter"): void;
+    (e: "mouseleave"): void;
+}>();
 
-        mouseenter(): boolean {
-            return true;
-        },
+const onMouseEnter = (): void => emit("mouseenter");
+const onMouseLeave = (): void => emit("mouseleave");
+const elementId = computed<string>(() => `search-result-position-${position}`);
 
-        mouseleave(): boolean {
-            return true;
-        },
-    },
-
-    components: {
-        SearchResultIcon,
-    },
-
-    props: {
-        item: {
-            type: <PropType<SearchResultItem>>Object,
-            required: true,
-        },
-
-        position: {
-            type: Number,
-            required: true,
-        },
-
-        hovered: {
-            type: Boolean,
-            required: true,
-        },
-    },
-
-    setup({ item, position }, { emit }) {
-        const onMouseEnter = (): void => emit("mouseenter");
-        const onMouseLeave = (): void => emit("mouseleave");
-        const elementId = computed<string>(() => `search-result-position-${position}`);
-
-        const onClick = (mouseEvent: MouseEvent): void =>
-            mouseEvent.ctrlKey || mouseEvent.metaKey
-                ? emit("openLocation", ObjectUtility.clone(item))
-                : emit("execute", ObjectUtility.clone(item));
-
-        return {
-            elementId,
-            onClick,
-            onMouseEnter,
-            onMouseLeave,
-        };
-    },
-});
+const onClick = (mouseEvent: MouseEvent): void =>
+    mouseEvent.ctrlKey || mouseEvent.metaKey
+        ? emit("openLocation", ObjectUtility.clone(item))
+        : emit("execute", ObjectUtility.clone(item));
 </script>
 
 <style scoped>

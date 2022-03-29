@@ -5,7 +5,6 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
 import { LocalFilePathSearchResultItemIcon } from "../../../common/SearchResult/LocalFilePathSearchResultItemIcon";
 
 defineProps<{ icon: LocalFilePathSearchResultItemIcon }>();

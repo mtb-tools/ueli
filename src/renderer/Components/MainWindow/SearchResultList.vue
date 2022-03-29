@@ -14,138 +14,113 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType, ref, onMounted, watch } from "vue";
+<script lang="ts" setup>
+import { ref, onMounted, watch, defineEmits } from "vue";
 import SearchResult from "./SearchResult.vue";
 import { SearchResultItem } from "../../../common/SearchResult/SearchResultItem";
 import { vueEventEmitter } from "../../VueEventEmitter";
 import { ObjectUtility } from "../../../common/ObjectUtility";
 
-export default defineComponent({
-    emits: {
-        executionRequested(searchResultItem: SearchResultItem): boolean {
-            return searchResultItem !== undefined;
-        },
+const emit = defineEmits<{
+    (e: "executionRequested", searchResultItem: SearchResultItem): void;
+    (e: "openLocationRequested", searchResultItem: SearchResultItem): void;
+}>();
 
-        openLocationRequested(searchResultItem: SearchResultItem): boolean {
-            return searchResultItem !== undefined;
-        },
-    },
+const props = defineProps<{ searchResultItems: SearchResultItem[] }>();
 
-    props: {
-        searchResultItems: {
-            type: <PropType<SearchResultItem[]>>Array,
-            required: true,
-        },
-    },
+const currentlyHoveredPosition = ref<number | undefined>(0);
 
-    components: { SearchResult },
+const onMouseEnter = (position: number): void => {
+    currentlyHoveredPosition.value = position;
+};
 
-    setup(props, { emit }) {
-        const currentlyHoveredPosition = ref<number | undefined>(0);
+const onMouseLeave = (position: number): void => {
+    if (currentlyHoveredPosition.value === position) {
+        currentlyHoveredPosition.value = undefined;
+    }
+};
 
-        const onMouseEnter = (position: number): void => {
-            currentlyHoveredPosition.value = position;
-        };
+const execute = (searchResultItem: SearchResultItem): void =>
+    emit("executionRequested", ObjectUtility.clone(searchResultItem));
 
-        const onMouseLeave = (position: number): void => {
-            if (currentlyHoveredPosition.value === position) {
-                currentlyHoveredPosition.value = undefined;
-            }
-        };
+const openLocation = (searchResultItem: SearchResultItem): void =>
+    emit("openLocationRequested", ObjectUtility.clone(searchResultItem));
 
-        const execute = (searchResultItem: SearchResultItem): void =>
-            emit("executionRequested", ObjectUtility.clone(searchResultItem));
+const elementIsOutOfView = (container: HTMLDivElement, element: HTMLDivElement): boolean => {
+    const scrolledFromTop = container.scrollTop;
+    const scrollContainerHeight = container.clientHeight;
+    const elementOffsetTop = element.offsetTop - container.offsetTop;
+    const elementHeight = element.clientHeight;
 
-        const openLocation = (searchResultItem: SearchResultItem): void =>
-            emit("openLocationRequested", ObjectUtility.clone(searchResultItem));
+    return (
+        scrolledFromTop + scrollContainerHeight <= elementOffsetTop + elementHeight ||
+        elementOffsetTop <= scrolledFromTop
+    );
+};
 
-        const elementIsOutOfView = (container: HTMLDivElement, element: HTMLDivElement): boolean => {
-            const scrolledFromTop = container.scrollTop;
-            const scrollContainerHeight = container.clientHeight;
-            const elementOffsetTop = element.offsetTop - container.offsetTop;
-            const elementHeight = element.clientHeight;
+const scrollElementIntoViewIfNecessary = (): void => {
+    const searchResultListContainer = document.getElementById("search-result-list-container") as
+        | HTMLDivElement
+        | undefined;
 
-            return (
-                scrolledFromTop + scrollContainerHeight <= elementOffsetTop + elementHeight ||
-                elementOffsetTop <= scrolledFromTop
-            );
-        };
+    const currentlySelectedElement = <HTMLDivElement | undefined>(
+        document.getElementById(`search-result-position-${currentlyHoveredPosition.value}`)
+    );
 
-        const scrollElementIntoViewIfNecessary = (): void => {
-            const searchResultListContainer = document.getElementById("search-result-list-container") as
-                | HTMLDivElement
-                | undefined;
+    if (searchResultListContainer && currentlySelectedElement) {
+        if (elementIsOutOfView(searchResultListContainer, currentlySelectedElement)) {
+            currentlySelectedElement.scrollIntoView({ behavior: "smooth" });
+        }
+    }
+};
 
-            const currentlySelectedElement = <HTMLDivElement | undefined>(
-                document.getElementById(`search-result-position-${currentlyHoveredPosition.value}`)
-            );
+const currentlySelectedIndexChange = (direction: "ArrowUp" | "ArrowDown"): void => {
+    const minimumIndex = 0;
+    const maximumIndex = props.searchResultItems.length - 1;
 
-            if (searchResultListContainer && currentlySelectedElement) {
-                if (elementIsOutOfView(searchResultListContainer, currentlySelectedElement)) {
-                    currentlySelectedElement.scrollIntoView({ behavior: "smooth" });
-                }
-            }
-        };
+    if (currentlyHoveredPosition.value === undefined) {
+        currentlyHoveredPosition.value = 0;
+        return;
+    }
 
-        const currentlySelectedIndexChange = (direction: "ArrowUp" | "ArrowDown"): void => {
-            const minimumIndex = 0;
-            const maximumIndex = props.searchResultItems.length - 1;
+    if (direction === "ArrowUp") {
+        currentlyHoveredPosition.value =
+            currentlyHoveredPosition.value === minimumIndex ? maximumIndex : currentlyHoveredPosition.value - 1;
+    }
 
-            if (currentlyHoveredPosition.value === undefined) {
-                currentlyHoveredPosition.value = 0;
-                return;
-            }
+    if (direction === "ArrowDown") {
+        currentlyHoveredPosition.value =
+            currentlyHoveredPosition.value === maximumIndex ? minimumIndex : currentlyHoveredPosition.value + 1;
+    }
 
-            if (direction === "ArrowUp") {
-                currentlyHoveredPosition.value =
-                    currentlyHoveredPosition.value === minimumIndex ? maximumIndex : currentlyHoveredPosition.value - 1;
-            }
+    scrollElementIntoViewIfNecessary();
+};
 
-            if (direction === "ArrowDown") {
-                currentlyHoveredPosition.value =
-                    currentlyHoveredPosition.value === maximumIndex ? minimumIndex : currentlyHoveredPosition.value + 1;
-            }
+watch(
+    () => props.searchResultItems,
+    () => {
+        if (props.searchResultItems.length > 0) {
+            currentlyHoveredPosition.value = 0;
+        }
+    }
+);
 
-            scrollElementIntoViewIfNecessary();
-        };
+onMounted(() => {
+    vueEventEmitter.on("UserInputArrowKeyPressed", (key) => {
+        currentlySelectedIndexChange(key);
+    });
 
-        watch(
-            () => props.searchResultItems,
-            () => {
-                if (props.searchResultItems.length > 0) {
-                    currentlyHoveredPosition.value = 0;
-                }
-            }
+    vueEventEmitter.on("UserInputEnterPressed", (ctrlOrMetaPressed?: boolean) => {
+        const currentlySelectedItem = props.searchResultItems.find(
+            (_, index) => index === currentlyHoveredPosition.value
         );
 
-        onMounted(() => {
-            vueEventEmitter.on("UserInputArrowKeyPressed", (key) => {
-                currentlySelectedIndexChange(key);
-            });
-
-            vueEventEmitter.on("UserInputEnterPressed", (ctrlOrMetaPressed?: boolean) => {
-                const currentlySelectedItem = props.searchResultItems.find(
-                    (_, index) => index === currentlyHoveredPosition.value
-                );
-
-                if (currentlySelectedItem) {
-                    ctrlOrMetaPressed
-                        ? openLocation(ObjectUtility.clone(currentlySelectedItem))
-                        : execute(ObjectUtility.clone(currentlySelectedItem));
-                }
-            });
-        });
-
-        return {
-            currentlyHoveredPosition,
-            currentlySelectedIndexChange,
-            execute,
-            onMouseEnter,
-            onMouseLeave,
-            openLocation,
-        };
-    },
+        if (currentlySelectedItem) {
+            ctrlOrMetaPressed
+                ? openLocation(ObjectUtility.clone(currentlySelectedItem))
+                : execute(ObjectUtility.clone(currentlySelectedItem));
+        }
+    });
 });
 </script>
 
