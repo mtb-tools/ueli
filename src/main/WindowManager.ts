@@ -3,6 +3,7 @@ import { BrowserWindowConstructorOptions } from "electron/main";
 import { join } from "path";
 import { IpcChannel } from "../common/IpcChannel";
 import { ObjectUtility } from "../common/ObjectUtility";
+import { SettingsManager } from "./SettingsManager";
 
 export class WindowManager {
     private readonly mainHtmlFilePath = join(__dirname, "..", "views", "main.html");
@@ -18,6 +19,8 @@ export class WindowManager {
     private mainWindow?: BrowserWindow;
     private settingsWindow?: BrowserWindow;
 
+    public constructor(private readonly settingsManager: SettingsManager) {}
+
     public async createMainWindow(): Promise<void> {
         this.mainWindow = new BrowserWindow(
             this.mergeWindowConstructorOptionsWithDefault({
@@ -31,7 +34,7 @@ export class WindowManager {
         );
 
         await this.mainWindow.loadFile(this.mainHtmlFilePath);
-        this.mainWindow.on("blur", () => this.hideMainWindow());
+        this.mainWindow.on("blur", () => this.shouldHideMainWindowOnBlur() && this.hideMainWindow());
     }
 
     public async createSettingsWindow(): Promise<void> {
@@ -58,14 +61,6 @@ export class WindowManager {
 
     public hideMainWindow(): void {
         WindowManager.hideWindow(this.mainWindow);
-    }
-
-    public hideSettingsWindow(): void {
-        WindowManager.hideWindow(this.settingsWindow);
-    }
-
-    public toggleSettingsWindow(): void {
-        WindowManager.toggleWindow(this.settingsWindow);
     }
 
     private static toggleWindow(browserWindow?: BrowserWindow) {
@@ -111,5 +106,9 @@ export class WindowManager {
             ObjectUtility.clone<BrowserWindowConstructorOptions>(this.defaultWindowCustructorOptions),
             ObjectUtility.clone<BrowserWindowConstructorOptions>(options)
         );
+    }
+
+    private shouldHideMainWindowOnBlur(): boolean {
+        return this.settingsManager.getSettings().generalSettings.hideWindowOnBlur;
     }
 }

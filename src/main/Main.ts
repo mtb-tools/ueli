@@ -30,7 +30,7 @@ const settingsManager = new SettingsManager(
     logger
 );
 
-const windowManager = new WindowManager();
+const windowManager = new WindowManager(settingsManager);
 const trayIconManager = new TrayIconManager(operatingSystem, ipcMain);
 
 const pluginRepository =
