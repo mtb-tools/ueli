@@ -3,17 +3,12 @@ import { SearchResultItem } from "../../../common/SearchResult/SearchResultItem"
 import { Searchable } from "../../Core/Searchable";
 import { FilePathExecutor } from "../../Executors/FilePathExecutor";
 import { FilePathLocationOpener } from "../../LocationOpeners/FilePathLocationOpener";
-import { WindowsApplicationRetrieverResult } from "./WindowsApplicationRetrieverResult";
 
 export class WindowsApplication implements Searchable {
-    public static fromWindowsAppRetrieverResult(app: WindowsApplicationRetrieverResult): WindowsApplication {
-        return new WindowsApplication(app.BaseName, app.FullName, app.IconFilePath);
-    }
-
-    private constructor(
-        public readonly name: string,
-        public readonly filePath: string,
-        public readonly iconFilePath: string
+    public constructor(
+        private readonly name: string,
+        private readonly filePath: string,
+        private readonly iconFilePath: string
     ) {}
 
     public toSearchResultItem(): SearchResultItem {

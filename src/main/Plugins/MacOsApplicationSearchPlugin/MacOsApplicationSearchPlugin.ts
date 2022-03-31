@@ -1,6 +1,5 @@
 import { createHash } from "crypto";
-import { basename, extname, join } from "path";
-import { LocalFilePathSearchResultItemIcon } from "../../../common/SearchResult/LocalFilePathSearchResultItemIcon";
+import { join } from "path";
 import { ExecutionContext } from "../../ExecutionContext";
 import { SearchPlugin } from "../SearchPlugin";
 import { MacOsApplication } from "./MacOsApplication";
@@ -34,10 +33,9 @@ export class MacOsApplicationSearchPlugin extends SearchPlugin<Record<string, un
         const filePaths = await this.macOsApplicationFileRetriever();
         await this.generateMacAppIcons(filePaths);
 
-        this.applications = filePaths.map((filePath) => {
-            const icon = new LocalFilePathSearchResultItemIcon(this.getApplicationIconFilePath(filePath));
-            return new MacOsApplication(filePath, icon);
-        });
+        this.applications = filePaths.map(
+            (filePath) => new MacOsApplication(filePath, this.getApplicationIconFilePath(filePath))
+        );
     }
 
     private async generateMacAppIcons(filePaths: string[]): Promise<void> {
@@ -57,13 +55,7 @@ export class MacOsApplicationSearchPlugin extends SearchPlugin<Record<string, un
     }
 
     private getApplicationIconFilePath(applicationFilePath: string): string {
-        const hash = createHash("md5").update(`${applicationFilePath}`).digest("hex");
-
-        const fileName = `${basename(applicationFilePath)
-            .replace(extname(applicationFilePath), "")
-            .toLowerCase()
-            .replace(/\s/g, "-")}-${hash}`;
-
-        return `${join(this.getTemporaryFolderPath(), fileName)}.png`;
+        const hash = createHash("sha256").update(`${applicationFilePath}`).digest("hex");
+        return `${join(this.getTemporaryFolderPath(), hash)}.png`;
     }
 }

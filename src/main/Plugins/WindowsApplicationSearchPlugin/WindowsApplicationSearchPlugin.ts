@@ -41,7 +41,7 @@ export class WindowsApplicationSearchPlugin extends SearchPlugin<WindowsApplicat
         const windowsApplicationRetrieverResults = <WindowsApplicationRetrieverResult[]>JSON.parse(stdout);
 
         this.applications = windowsApplicationRetrieverResults.map((app) =>
-            WindowsApplication.fromWindowsAppRetrieverResult(app)
+            WindowsApplicationSearchPlugin.windowsApplicationRetrieverResultToWindowsApplication(app)
         );
     }
 
@@ -72,5 +72,11 @@ export class WindowsApplicationSearchPlugin extends SearchPlugin<WindowsApplicat
 
     private static getFileExtensionFilter(fileExtensions: string[]): string {
         return fileExtensions.map((fileExtension) => `'*.${fileExtension}'`).join(",");
+    }
+
+    private static windowsApplicationRetrieverResultToWindowsApplication(
+        app: WindowsApplicationRetrieverResult
+    ): WindowsApplication {
+        return new WindowsApplication(app.BaseName, app.FullName, app.IconFilePath);
     }
 }
