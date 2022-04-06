@@ -47,7 +47,7 @@ export class WindowManager {
         WindowManager.toggleWindow(this.mainWindow);
     }
 
-    public showMainWindow(): void {
+    public async showMainWindow(): Promise<void> {
         WindowManager.showWindow(this.mainWindow);
     }
 

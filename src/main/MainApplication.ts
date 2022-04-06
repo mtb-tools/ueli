@@ -37,7 +37,7 @@ export class MainApplication {
     private registerElectronAppEventListeners(): void {
         this.appendCommandlineSwitches();
         this.electronApp.on("ready", async () => await this.startApp());
-        this.electronApp.on("window-all-closed", () => this.quitApp());
+        this.electronApp.on("window-all-closed", async () => await this.quitApp());
     }
 
     private async startApp(): Promise<void> {
@@ -48,7 +48,7 @@ export class MainApplication {
         await this.initializeSearchEngine();
     }
 
-    private quitApp(): void {
+    private async quitApp(): Promise<void> {
         this.electronApp.quit();
     }
 
@@ -139,13 +139,12 @@ export class MainApplication {
 
         this.ipcMain.on(
             IpcChannel.TrayIconEvent,
-            async (ipcMainEvent, trayIconEvent: TrayIconEvent) => await this.handleTrayIconEvent(trayIconEvent)
+            async (_, trayIconEvent: TrayIconEvent) => await this.handleTrayIconEvent(trayIconEvent)
         );
 
         this.ipcMain.on(
             IpcChannel.UeliCommandEvent,
-            async (ipcMainEvent, ueliCommandEvent: UeliCommandEvent) =>
-                await this.handleUeliCommandEvent(ueliCommandEvent)
+            async (_, ueliCommandEvent: UeliCommandEvent) => await this.handleUeliCommandEvent(ueliCommandEvent)
         );
 
         this.ipcMain.on(
@@ -168,49 +167,25 @@ export class MainApplication {
     }
 
     private async handleTrayIconEvent(event: TrayIconEvent): Promise<void> {
-        switch (event) {
-            case TrayIconEvent.ShowClicked:
-                this.windowManager.showMainWindow();
-                break;
+        const trayIconEventHandlers: Record<TrayIconEvent, () => Promise<void>> = {
+            ClearCachesClicked: () => this.clearCaches(),
+            QuitClicked: () => this.quitApp(),
+            RescanClicked: () => this.rescan(),
+            SettingsClicked: () => this.windowManager.showSettingsWindow(),
+            ShowClicked: () => this.windowManager.showMainWindow(),
+        };
 
-            case TrayIconEvent.SettingsClicked:
-                await this.windowManager.showSettingsWindow();
-                break;
-
-            case TrayIconEvent.QuitClicked:
-                this.quitApp();
-                break;
-
-            case TrayIconEvent.RescanClicked:
-                await this.rescan();
-                break;
-
-            case TrayIconEvent.ClearCachesClicked:
-                await this.clearCaches();
-                break;
-
-            default:
-                throw new Error(`Failed to handle tray icon event ${event}. Reason: no handler found.`);
-        }
+        return trayIconEventHandlers[event]();
     }
 
     private async handleUeliCommandEvent(event: UeliCommandEvent): Promise<void> {
-        switch (event) {
-            case UeliCommandEvent.OpenSettings:
-                await this.windowManager.showSettingsWindow();
-                break;
+        const eventHandlers: Record<UeliCommandEvent, () => Promise<void>> = {
+            OpenSettings: () => this.windowManager.showSettingsWindow(),
+            QuitApp: () => this.quitApp(),
+            Rescan: () => this.rescan(),
+        };
 
-            case UeliCommandEvent.QuitApp:
-                this.quitApp();
-                break;
-
-            case UeliCommandEvent.Rescan:
-                await this.rescan();
-                break;
-
-            default:
-                throw new Error(`Failed to handle ueli command event ${event}. Reason: no handler found`);
-        }
+        return eventHandlers[event]();
     }
 
     private async updateSettings(updatedSettings: Settings): Promise<void> {
