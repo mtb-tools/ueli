@@ -21,7 +21,7 @@ const failedToSaveSettingsNotification = (error: unknown): NotificationData => (
 
 export const saveSettings = async (settings: Settings): Promise<void> => {
     try {
-        window.Bridge.ipcRenderer.invoke<Settings, void>(IpcChannel.UpdateSettings, settings);
+        await window.Bridge.ipcRenderer.invoke<Settings, void>(IpcChannel.UpdateSettings, settings);
         vueEventEmitter.emit("Notification", successfullySavedSettingsNotification());
     } catch (error) {
         vueEventEmitter.emit("Notification", failedToSaveSettingsNotification(error));
