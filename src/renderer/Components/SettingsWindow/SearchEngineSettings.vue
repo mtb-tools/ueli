@@ -52,17 +52,17 @@ const save = async (): Promise<void> => saveSettings(ObjectUtility.clone<Setting
 
 const updateThreshold = async (threshold: number): Promise<void> => {
     settings.value.searchEngineSettings.threshold = threshold;
-    save();
+    await save();
 };
 
 const updateRescanInterval = async (interval: number): Promise<void> => {
     settings.value.searchEngineSettings.automaticRescanIntervalInSeconds = interval;
-    save();
+    await save();
 };
 
 const updateAutomaticRescanEnabled = async (enabled: boolean): Promise<void> => {
     settings.value.searchEngineSettings.automaticRescanEnabled = enabled;
-    save();
+    await save();
 };
 </script>
 
