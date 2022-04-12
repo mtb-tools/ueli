@@ -6,24 +6,17 @@ jobs:
         strategy:
             matrix:
                 os: [macos-latest, windows-latest, ubuntu-latest]
-                node_version: ["16"]
 
         runs-on: ${{ matrix.os }}
-        name: Build on ${{ matrix.os }} with Node ${{ matrix.node_version }}
+        name: Build on ${{ matrix.os }}
         steps:
             - name: Checkout current commit/branch/tag
               uses: actions/checkout@v1
 
-            - name: Setup Node ${{ matrix.node_version }}
+            - name: Setup Node
               uses: actions/setup-node@v1
               with:
-                  node-version: ${{ matrix.node_version }}
-
-            - name: Show exact node version
-              run: node --version
-
-            - name: Show exact yarn version
-              run: yarn --version
+                  node-version: 16
 
             - name: Install dependencies
               run: yarn install
