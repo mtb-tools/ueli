@@ -32,8 +32,7 @@ const selectionChanged = (groupKey: string, selectedIndex: number): void =>
     optionGroups.value.forEach((optionGroup) => {
         if (optionGroup.key === groupKey) {
             optionGroup.options.forEach((option, index) => {
-                const selected = index === selectedIndex;
-                option.selected = selected;
+                option.selected = index === selectedIndex;
             });
         }
     });
