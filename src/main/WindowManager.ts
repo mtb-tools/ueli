@@ -9,7 +9,7 @@ export class WindowManager {
     private readonly mainHtmlFilePath = join(__dirname, "..", "views", "main.html");
     private readonly settingsHtmlFilePath = join(__dirname, "..", "views", "settings.html");
     private readonly preloadJsFilePath = join(__dirname, "Preload.js");
-    private readonly defaultWindowCustructorOptions: BrowserWindowConstructorOptions = {
+    private readonly browserWindowConstructorOptions: BrowserWindowConstructorOptions = {
         webPreferences: {
             preload: this.preloadJsFilePath,
             spellcheck: false,
@@ -103,7 +103,7 @@ export class WindowManager {
         options: BrowserWindowConstructorOptions
     ): BrowserWindowConstructorOptions {
         return Object.assign(
-            ObjectUtility.clone<BrowserWindowConstructorOptions>(this.defaultWindowCustructorOptions),
+            ObjectUtility.clone<BrowserWindowConstructorOptions>(this.browserWindowConstructorOptions),
             ObjectUtility.clone<BrowserWindowConstructorOptions>(options)
         );
     }
