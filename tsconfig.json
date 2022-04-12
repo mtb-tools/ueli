@@ -9,6 +9,7 @@
         "strictNullChecks": true,
         "noUnusedLocals": true,
         "moduleResolution": "node",
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "jsx": "preserve"
     }
 }
