@@ -5,7 +5,6 @@ import { Logger } from "../common/Logger/Logger";
 import { OperatingSystem } from "../common/OperatingSystem/OperatingSystem";
 import { SearchResultItem } from "../common/SearchResult/SearchResultItem";
 import { Settings } from "../common/Settings";
-import { CommandlineSwitchConfiguration } from "./CommandlineSwitchConfiguration";
 import { ExecutionService } from "./Core/ExecutionService";
 import { LocationOpeningService } from "./Core/LocationOpeningService";
 import { SearchEngine } from "./Core/SearchEngine";
@@ -31,11 +30,11 @@ export class MainApplication {
     ) {}
 
     public start(): void {
+        this.appendCommandlineSwitches();
         this.registerElectronAppEventListeners();
     }
 
     private registerElectronAppEventListeners(): void {
-        this.appendCommandlineSwitches();
         this.electronApp.on("ready", async () => await this.startApp());
         this.electronApp.on("window-all-closed", async () => await this.quitApp());
     }
@@ -53,23 +52,15 @@ export class MainApplication {
     }
 
     private appendCommandlineSwitches(): void {
-        const commandlineSwitchConfigurations: CommandlineSwitchConfiguration[] = [
-            {
-                operatingSystem: OperatingSystem.Windows,
-                commandlineSwitches: ["wm-window-animations-disabled"],
-            },
-        ];
+        const operatingSystemSpecificCommandlineSwitches: Record<OperatingSystem, string[]> = {
+            Windows: ["wm-window-animations-disabled"],
+            Linux: [],
+            macOS: [],
+        };
 
-        commandlineSwitchConfigurations.forEach((commandlineSwitchConfiguration) => {
-            if (
-                commandlineSwitchConfiguration.operatingSystem === this.operatingSystem ||
-                commandlineSwitchConfiguration.operatingSystem === undefined
-            ) {
-                commandlineSwitchConfiguration.commandlineSwitches.forEach((commandlineSwitch) => {
-                    this.electronApp.commandLine.appendSwitch(commandlineSwitch);
-                });
-            }
-        });
+        operatingSystemSpecificCommandlineSwitches[this.operatingSystem].forEach((commandlineSwitch) =>
+            this.electronApp.commandLine.appendSwitch(commandlineSwitch)
+        );
     }
 
     private createTrayIcon(): void {
@@ -87,52 +78,36 @@ export class MainApplication {
     private registerIpcEventListeners(): void {
         this.ipcMain.handle(
             IpcChannel.Search,
-            (event: IpcMainInvokeEvent, args: string[]): Promise<SearchResultItem[]> => {
-                if (args.length === 0) {
-                    return Promise.reject("Failed to handle search term. Reason: no search term specified.");
-                }
-
-                return Promise.resolve(this.searchEngine.search(args[0]));
-            }
+            (_: IpcMainInvokeEvent, args: string[]): Promise<SearchResultItem[]> =>
+                args.length > 0
+                    ? Promise.resolve(this.searchEngine.search(args[0]))
+                    : Promise.reject("Failed to handle search term. Reason: no search term specified.")
         );
 
         this.ipcMain.handle(
             IpcChannel.Execute,
-            async (event: IpcMainInvokeEvent, args: SearchResultItem[]): Promise<void> => {
-                if (args.length === 0) {
-                    return Promise.reject(
-                        "Failed to execute search result item. Reason: no search result items given."
-                    );
-                }
-
-                this.windowManager.hideMainWindow();
-                await this.executionService.execute(args[0]);
-            }
+            async (_: IpcMainInvokeEvent, args: SearchResultItem[]): Promise<void> =>
+                args.length > 0
+                    ? this.execute(args[0])
+                    : Promise.reject("Failed to execute search result item. Reason: no search result items given.")
         );
 
         this.ipcMain.handle(
             IpcChannel.OpenLocation,
-            (event: IpcMainInvokeEvent, args: SearchResultItem[]): Promise<void> => {
-                if (args.length === 0) {
-                    return Promise.reject("Unable to open location. Reason: no search result items given.");
-                }
-
-                this.windowManager.hideMainWindow();
-                return this.locationOpeningService.openLocation(args[0]);
-            }
+            (_: IpcMainInvokeEvent, args: SearchResultItem[]): Promise<void> =>
+                args.length > 0
+                    ? this.openLocation(args[0])
+                    : Promise.reject("Unable to open location. Reason: no search result items given.")
         );
 
         this.ipcMain.handle(IpcChannel.ClearCaches, () => this.clearCaches());
 
         this.ipcMain.handle(
             IpcChannel.UpdateSettings,
-            (ipcMainEvent: IpcMainInvokeEvent, args: Settings[]): Promise<void> => {
-                if (args.length === 0) {
-                    return Promise.reject("Unable to update settings. Reason: no settings given.");
-                }
-
-                return this.updateSettings(args[0]);
-            }
+            (_: IpcMainInvokeEvent, args: Settings[]): Promise<void> =>
+                args.length > 0
+                    ? this.updateSettings(args[0])
+                    : Promise.reject("Unable to update settings. Reason: no settings given.")
         );
 
         this.ipcMain.on(IpcChannel.EscapePressed, () => this.windowManager.hideMainWindow());
@@ -151,6 +126,16 @@ export class MainApplication {
             IpcChannel.GetSettings,
             (event: IpcMainEvent) => (event.returnValue = this.settingsManager.getSettings())
         );
+    }
+
+    private execute(searchResultItem: SearchResultItem): Promise<void> {
+        this.windowManager.hideMainWindow();
+        return this.executionService.execute(searchResultItem);
+    }
+
+    private openLocation(searchResultItem: SearchResultItem): Promise<void> {
+        this.windowManager.hideMainWindow();
+        return this.locationOpeningService.openLocation(searchResultItem);
     }
 
     private async rescan(): Promise<void> {
