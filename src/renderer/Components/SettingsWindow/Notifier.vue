@@ -5,8 +5,9 @@
             v-for="(notification, index) in notifications"
             :key="index"
             :message="notification.message"
-            :type="notification.type?.toString()"
+            :type="notification.type?.toString().toLowerCase() ?? 'default'"
             :icon="notification.icon"
+            :closable="true"
             @close="removeNotification(index)"
         />
     </div>
