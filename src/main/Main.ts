@@ -11,6 +11,7 @@ import { defaultSettings } from "./DefaultSettings";
 import { ExecutionContextFactory } from "./ExecutionContextFactory";
 import { FilePathExecutor } from "./Executors/FilePathExecutor";
 import { UeliCommandExecutor } from "./Executors/UeliCommandExecutor";
+import { FileSettingsRepository } from "./FileSettingsRepository";
 import { FilePathLocationOpener } from "./LocationOpeners/FilePathLocationOpener";
 import { MainApplication } from "./MainApplication";
 import { MacOsPluginRepository } from "./PluginRepository/MacOsPluginRepository";
@@ -24,11 +25,8 @@ const logger = new ConsoleLogger();
 
 const executionContext = ExecutionContextFactory.fromElectronApp(app);
 
-const settingsManager = new SettingsManager(
-    join(executionContext.userDataPath, "ueli9.settings.json"),
-    defaultSettings,
-    logger
-);
+const fileSettingsRepository = new FileSettingsRepository(join(executionContext.userDataPath, "ueli9.settings.json"));
+const settingsManager = new SettingsManager(fileSettingsRepository, defaultSettings, logger);
 
 const windowManager = new WindowManager(settingsManager);
 const trayIconManager = new TrayIconManager(operatingSystem, ipcMain);

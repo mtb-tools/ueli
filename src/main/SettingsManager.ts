@@ -1,44 +1,38 @@
 import { Logger } from "../common/Logger/Logger";
+import { ObjectUtility } from "../common/ObjectUtility";
 import { Settings } from "../common/Settings";
 import { SettingsFactory } from "./SettingsFactory";
-import { FileSystemUtility } from "./Utilities/FileSystemUtility";
+import { SettingsRepository } from "./SettingsRepository";
 
 export class SettingsManager {
-    private settings: Settings;
+    private userSettings?: Settings;
 
     public constructor(
-        private readonly userSettingsFilePath: string,
+        private readonly settingsRepository: SettingsRepository,
         private readonly defaultSettings: Settings,
         private readonly logger: Logger
     ) {
-        if (FileSystemUtility.existsSync(this.userSettingsFilePath)) {
-            this.settings = this.readSettingsFromFileSystem();
-        } else {
-            FileSystemUtility.writeJsonFileSync(this.defaultSettings, this.userSettingsFilePath);
-            this.settings = this.defaultSettings;
-        }
+        this.userSettings = this.readSettingsFromFileSystem();
     }
 
     public getSettings(): Settings {
-        return this.settings;
+        return SettingsFactory.createFromUserSettings(
+            ObjectUtility.toRecord<Settings>(this.userSettings ?? <Settings>{}),
+            this.defaultSettings
+        );
     }
 
     public updateSettings(updatedSettings: Settings): Promise<void> {
-        this.settings = updatedSettings;
-        return FileSystemUtility.writeJsonFile<Settings>(updatedSettings, this.userSettingsFilePath);
+        this.userSettings = updatedSettings;
+        return this.settingsRepository.writeSettings(updatedSettings);
     }
 
-    private readSettingsFromFileSystem(): Settings {
+    private readSettingsFromFileSystem(): Settings | undefined {
         try {
-            return SettingsFactory.createFromUserSettings(
-                FileSystemUtility.readJsonFileSync<Record<string, unknown>>(this.userSettingsFilePath),
-                this.defaultSettings
-            );
+            return this.settingsRepository.readSettings();
         } catch (error) {
-            this.logger.error(
-                `Default settings will be applied. Failed to read user settings from settings file. Reason: ${error}`
-            );
-            return this.defaultSettings;
+            this.logger.error(`Failed to read user settings from settings file: Reason ${error}`);
+            return undefined;
         }
     }
 }
