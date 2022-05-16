@@ -6,10 +6,10 @@ export const GeneralSettings: FC = () => {
     const settings = getSettings();
     const [hideWindowOnBlur, setHideWindowOnBlur] = useState<boolean>(settings.generalSettings.hideWindowOnBlur);
 
-    const toggleHideWindowOnBlur = () => {
+    const toggleHideWindowOnBlur = async () => {
         settings.generalSettings.hideWindowOnBlur = !hideWindowOnBlur;
         setHideWindowOnBlur(settings.generalSettings.hideWindowOnBlur);
-        saveSettings(settings);
+        await saveSettings(settings);
     };
 
     return (

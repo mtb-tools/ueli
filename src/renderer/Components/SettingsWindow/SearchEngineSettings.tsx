@@ -5,29 +5,32 @@ import { getSettings, saveSettings } from "../../Actions";
 export const SearchEngineSettings: FC = () => {
     const settings = getSettings();
 
-    const [threshold, setTreshold] = useState<number>(settings.searchEngineSettings.threshold);
-    const updateThreshold = (value: number) => {
+    const [threshold, setThreshold] = useState<number>(settings.searchEngineSettings.threshold);
+
+    const updateThreshold = async (value: number) => {
         settings.searchEngineSettings.threshold = value;
-        setTreshold(settings.searchEngineSettings.threshold);
-        saveSettings(settings);
+        setThreshold(settings.searchEngineSettings.threshold);
+        await saveSettings(settings);
     };
 
     const [automaticRescanEnabled, setAutomaticRescanEnabled] = useState<boolean>(
         settings.searchEngineSettings.automaticRescanEnabled
     );
-    const toggleAutomaticRescanEnabled = () => {
+
+    const toggleAutomaticRescanEnabled = async () => {
         settings.searchEngineSettings.automaticRescanEnabled = !automaticRescanEnabled;
         setAutomaticRescanEnabled(settings.searchEngineSettings.automaticRescanEnabled);
-        saveSettings(settings);
+        await saveSettings(settings);
     };
 
     const [automaticRescanInterval, setAutomaticRescanInterval] = useState<number>(
         settings.searchEngineSettings.automaticRescanIntervalInSeconds
     );
-    const updateAutomaticRescanInterval = (updatedValue: number) => {
+
+    const updateAutomaticRescanInterval = async (updatedValue: number) => {
         settings.searchEngineSettings.automaticRescanIntervalInSeconds = updatedValue;
         setAutomaticRescanInterval(updatedValue);
-        saveSettings(settings);
+        await saveSettings(settings);
     };
 
     return (
