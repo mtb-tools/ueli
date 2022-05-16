@@ -47,7 +47,7 @@ export class SearchEngine {
         try {
             this.rescanPromise = Promise.all(this.searchPlugins.map((searchPlugin) => searchPlugin.rescan()));
             await this.rescanPromise;
-            this.logger.info(`Sucessfully rescanned`);
+            this.logger.info(`Successfully rescanned`);
         } catch (error) {
             this.handleError(new SearchEngineRescanError(error));
         } finally {
