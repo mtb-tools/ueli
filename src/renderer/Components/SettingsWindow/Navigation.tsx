@@ -31,16 +31,8 @@ export const Navigation: FC = () => {
                             url: "/windows-application-search",
                             key: "windows-application-search",
                         },
-                        {
-                            name: "Ueli Commands",
-                            url: "/ueli-commands",
-                            key: "ueli-commands",
-                        },
-                        {
-                            name: "Simple Folder Search",
-                            url: "/simple-folder-search",
-                            key: "simple-folder-search",
-                        },
+                        { name: "Ueli Commands", url: "/ueli-commands", key: "ueli-commands" },
+                        { name: "Simple Folder Search", url: "/simple-folder-search", key: "simple-folder-search" },
                     ],
                 },
             ],
