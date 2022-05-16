@@ -23,13 +23,13 @@ import { WindowManager } from "./WindowManager";
 const operatingSystem = OperatingSystemHelper.getOperatingSystem(platform());
 const logger = new ConsoleLogger();
 
-const executionContext = ExecutionContextFactory.fromElectronApp(app);
+const executionContext = ExecutionContextFactory.fromElectronApp(operatingSystem, app);
 
 const fileSettingsRepository = new FileSettingsRepository(join(executionContext.userDataPath, "ueli9.settings.json"));
 const settingsManager = new SettingsManager(fileSettingsRepository, defaultSettings, logger);
 
 const windowManager = new WindowManager(settingsManager);
-const trayIconManager = new TrayIconManager(operatingSystem, ipcMain);
+const trayIconManager = new TrayIconManager(executionContext, ipcMain);
 
 const pluginRepository =
     operatingSystem === OperatingSystem.Windows
@@ -61,9 +61,9 @@ new MainApplication(
     app,
     ipcMain,
     globalShortcut,
+    executionContext,
     windowManager,
     trayIconManager,
-    operatingSystem,
     searchEngine,
     executionService,
     locationOpeningService,

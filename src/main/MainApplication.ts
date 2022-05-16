@@ -8,6 +8,7 @@ import { Settings } from "../common/Settings";
 import { ExecutionService } from "./Core/ExecutionService";
 import { LocationOpeningService } from "./Core/LocationOpeningService";
 import { SearchEngine } from "./Core/SearchEngine";
+import { ExecutionContext } from "./ExecutionContext";
 import { SettingsManager } from "./SettingsManager";
 import { TrayIconEvent } from "./TrayIconEvent";
 import { TrayIconManager } from "./TrayIconManager";
@@ -19,9 +20,9 @@ export class MainApplication {
         private readonly electronApp: App,
         private readonly ipcMain: IpcMain,
         private readonly globalShortcut: GlobalShortcut,
+        private readonly executionContext: ExecutionContext,
         private readonly windowManager: WindowManager,
         private readonly trayIconManager: TrayIconManager,
-        private readonly operatingSystem: OperatingSystem,
         private readonly searchEngine: SearchEngine,
         private readonly executionService: ExecutionService,
         private readonly locationOpeningService: LocationOpeningService,
@@ -58,7 +59,7 @@ export class MainApplication {
             macOS: [],
         };
 
-        operatingSystemSpecificCommandlineSwitches[this.operatingSystem].forEach((commandlineSwitch) =>
+        operatingSystemSpecificCommandlineSwitches[this.executionContext.operatingSystem].forEach((commandlineSwitch) =>
             this.electronApp.commandLine.appendSwitch(commandlineSwitch)
         );
     }

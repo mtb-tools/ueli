@@ -2,6 +2,7 @@ import { Menu, Tray, IpcMain } from "electron";
 import { join } from "path";
 import { IpcChannel } from "../common/IpcChannel";
 import { OperatingSystem } from "../common/OperatingSystem/OperatingSystem";
+import { ExecutionContext } from "./ExecutionContext";
 import { TrayIconEvent } from "./TrayIconEvent";
 
 export class TrayIconManager {
@@ -12,7 +13,7 @@ export class TrayIconManager {
 
     private trayIcon?: Tray;
 
-    public constructor(private readonly operatingSystem: OperatingSystem, private readonly ipcMain: IpcMain) {
+    public constructor(private readonly executionContext: ExecutionContext, private readonly ipcMain: IpcMain) {
         this.trayIcon = undefined;
     }
 
@@ -52,7 +53,7 @@ export class TrayIconManager {
     }
 
     private getTrayIconPath(): string {
-        switch (this.operatingSystem) {
+        switch (this.executionContext.operatingSystem) {
             case OperatingSystem.Windows:
                 return this.trayIconFilePath.windows;
 
@@ -61,7 +62,7 @@ export class TrayIconManager {
 
             default:
                 throw new Error(
-                    `Failed to create tray icon. Reason: unsupported operating system: ${this.operatingSystem}`
+                    `Failed to create tray icon. Reason: unsupported operating system: ${this.executionContext.operatingSystem}`
                 );
         }
     }
