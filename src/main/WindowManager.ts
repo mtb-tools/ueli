@@ -24,11 +24,11 @@ export class WindowManager {
     public async createMainWindow(): Promise<void> {
         this.mainWindow = new BrowserWindow(
             this.mergeWindowConstructorOptionsWithDefault({
-                frame: false,
-                fullscreen: false,
+                // frame: false,
+                // fullscreen: false,
                 height: 500,
-                show: false,
-                transparent: true,
+                // show: false,
+                // transparent: true,
                 width: 600,
             })
         );
@@ -41,6 +41,10 @@ export class WindowManager {
         this.settingsWindow = new BrowserWindow(this.mergeWindowConstructorOptionsWithDefault({}));
         this.settingsWindow.setMenuBarVisibility(false);
         await this.settingsWindow.loadFile(this.settingsHtmlFilePath);
+        this.settingsWindow.webContents.on("did-fail-load", (event) => {
+            event.preventDefault();
+            this.settingsWindow?.loadFile(this.settingsHtmlFilePath);
+        });
     }
 
     public toggleMainWindow(): void {

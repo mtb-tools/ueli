@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "es2015",
         "module": "commonjs",
-        "lib": ["dom", "ES2021"],
+        "lib": ["dom", "ESNext"],
         "sourceMap": true,
         "strict": true,
         "noImplicitAny": true,
@@ -10,6 +10,8 @@
         "noUnusedLocals": true,
         "moduleResolution": "node",
         "esModuleInterop": true,
-        "jsx": "preserve"
-    }
+        "jsx": "react"
+    },
+    "include": ["src/**/*.ts", "src/**/*.tsx"],
+    "exclude": ["node_modules/**/*"]
 }

@@ -1,20 +1,21 @@
-const { join } = require("path");
-const { VueLoaderPlugin } = require("vue-loader");
+const path = require("path");
+const distributionDirectoryPath = path.join(__dirname, "bundle");
+const mode = process.env.NODE_ENV === "production" ? "production" : "development";
 
-const isProductionBuild = process.env.NODE_ENV === "production";
-
-const mode = isProductionBuild ? "production" : "development";
-const devtool = isProductionBuild ? undefined : "source-map";
-
-console.log(`Build mode: ${mode}`);
+console.log(`Mode: ${mode}`);
 
 const entryPoints = {
-    main: join(__dirname, "src", "main", "Main.ts"),
-    preload: join(__dirname, "src", "common", "Preload.ts"),
-    renderer: {
-        mainWindow: join(__dirname, "src", "renderer", "MainRenderer.ts"),
-        settingsWindow: join(__dirname, "src", "renderer", "SettingsRenderer.ts"),
-    },
+    main: path.join(__dirname, "src", "main", "Main.ts"),
+    preload: path.join(__dirname, "src", "common", "Preload.ts"),
+    mainRenderer: path.join(__dirname, "src", "renderer", "MainRenderer.tsx"),
+    settingsRenderer: path.join(__dirname, "src", "renderer", "SettingsRenderer.tsx"),
+};
+
+const outputFiles = {
+    main: "Main.js",
+    preload: "Preload.js",
+    mainRenderer: "MainRenderer.js",
+    settingsRenderer: "SettingsRenderer.js",
 };
 
 const targets = {
@@ -24,103 +25,64 @@ const targets = {
 };
 
 const baseConfig = {
-    output: {
-        filename: "[name].js",
-        path: join(__dirname, "bundle"),
-    },
-    mode,
-    devtool,
-};
-
-const mainConfig = {
-    entry: {
-        Main: entryPoints.main,
-    },
     module: {
         rules: [
             {
                 test: /\.tsx?$/,
-                loader: "ts-loader",
+                use: {
+                    loader: "babel-loader",
+                    options: {
+                        configFile: path.join(__dirname, ".babelrc"),
+                    },
+                },
             },
         ],
     },
     resolve: {
-        extensions: [".ts", ".js"],
+        extensions: [".ts", ".tsx", ".js", ".jsx"],
+    },
+    mode,
+};
+
+const mainConfig = {
+    entry: entryPoints.main,
+    output: {
+        filename: outputFiles.main,
+        path: distributionDirectoryPath,
     },
     target: targets.main,
 };
 
 const preloadConfig = {
-    entry: {
-        Preload: entryPoints.preload,
-    },
-    module: {
-        rules: [
-            {
-                test: /\.tsx?$/,
-                loader: "ts-loader",
-            },
-        ],
-    },
-    resolve: {
-        extensions: [".ts", ".js"],
+    entry: entryPoints.preload,
+    output: {
+        filename: outputFiles.preload,
+        path: distributionDirectoryPath,
     },
     target: targets.preload,
 };
 
-const rendererBaseConfig = {
-    module: {
-        rules: [
-            {
-                test: /\.vue$/,
-                loader: "vue-loader",
-            },
-            {
-                test: /\.tsx?$/,
-                loader: "ts-loader",
-                options: {
-                    appendTsSuffixTo: [/\.vue$/],
-                },
-            },
-            {
-                test: /\.css$/,
-                use: ["style-loader", "css-loader"],
-            },
-            {
-                test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-                use: ["file-loader"],
-            },
-            {
-                test: /\.png$/,
-                use: ["file-loader"],
-            },
-        ],
+const mainRendererConfig = {
+    entry: entryPoints.mainRenderer,
+    output: {
+        filename: outputFiles.mainRenderer,
+        path: distributionDirectoryPath,
     },
-    resolve: {
-        alias: {
-            vue: "@vue/runtime-dom",
-        },
-        extensions: [".ts", ".js"],
-    },
-    plugins: [new VueLoaderPlugin()],
     target: targets.renderer,
 };
 
-const mainRendererConfig = {
-    entry: {
-        MainRenderer: entryPoints.renderer.mainWindow,
-    },
-};
-
 const settingsRendererConfig = {
-    entry: {
-        SettingsRenderer: entryPoints.renderer.settingsWindow,
+    entry: entryPoints.settingsRenderer,
+    output: {
+        filename: outputFiles.settingsRenderer,
+        path: distributionDirectoryPath,
     },
+    target: targets.renderer,
 };
 
 module.exports = [
     Object.assign({}, baseConfig, mainConfig),
     Object.assign({}, baseConfig, preloadConfig),
-    Object.assign({}, baseConfig, rendererBaseConfig, mainRendererConfig),
-    Object.assign({}, baseConfig, rendererBaseConfig, settingsRendererConfig),
+    Object.assign({}, baseConfig, mainRendererConfig),
+    Object.assign({}, baseConfig, settingsRendererConfig),
 ];

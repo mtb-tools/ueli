@@ -9,4 +9,7 @@ export const defaultSettings: Settings = {
         automaticRescanEnabled: true,
         automaticRescanIntervalInSeconds: 300,
     },
+    appearanceSettings: {
+        colorTheme: "UeliDark",
+    },
 };
