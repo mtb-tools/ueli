@@ -1,8 +1,5 @@
 {
     "root": true,
-    "rules": {
-        "@typescript-eslint/explicit-module-boundary-types": 0
-    },
     "plugins": ["@typescript-eslint"],
     "extends": [
         "eslint:recommended",
