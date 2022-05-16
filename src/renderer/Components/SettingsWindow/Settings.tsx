@@ -6,7 +6,7 @@ import { Navigation } from "./Navigation";
 import { Route, Routes } from "react-router-dom";
 import { GeneralSettings } from "./GeneralSettings";
 import { SearchEngineSettings } from "./SearchEngineSettings";
-import { AppearanceSettings } from "./Appearance";
+import { AppearanceSettings } from "./AppearanceSettings";
 import { getSettings } from "../../Actions";
 
 initializeIcons();
