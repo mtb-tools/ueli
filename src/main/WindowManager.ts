@@ -41,6 +41,7 @@ export class WindowManager {
         this.settingsWindow = new BrowserWindow(this.mergeWindowConstructorOptionsWithDefault({}));
         this.settingsWindow.setMenuBarVisibility(false);
         await this.settingsWindow.loadFile(this.settingsHtmlFilePath);
+
         this.settingsWindow.webContents.on("did-fail-load", (event) => {
             event.preventDefault();
             this.settingsWindow?.loadFile(this.settingsHtmlFilePath);
@@ -51,7 +52,7 @@ export class WindowManager {
         WindowManager.toggleWindow(this.mainWindow);
     }
 
-    public async showMainWindow(): Promise<void> {
+    public showMainWindow(): void {
         WindowManager.showWindow(this.mainWindow);
     }
 
@@ -67,7 +68,7 @@ export class WindowManager {
         WindowManager.hideWindow(this.mainWindow);
     }
 
-    private static toggleWindow(browserWindow?: BrowserWindow) {
+    private static toggleWindow(browserWindow?: BrowserWindow): void {
         if (browserWindow && !browserWindow.isDestroyed()) {
             browserWindow.isVisible()
                 ? WindowManager.hideWindow(browserWindow)

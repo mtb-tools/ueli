@@ -1,6 +1,8 @@
 import { Logger } from "./Logger";
 
 export class ConsoleLogger implements Logger {
+    private static formatMessage = (message: string) => `${new Date().toLocaleTimeString()} - ${message}`;
+
     public debug(message: string): void {
         console.debug(ConsoleLogger.formatMessage(message));
     }
@@ -15,9 +17,5 @@ export class ConsoleLogger implements Logger {
 
     public error(message: string): void {
         console.error(ConsoleLogger.formatMessage(message));
-    }
-
-    private static formatMessage(message: string): string {
-        return `${new Date().toLocaleTimeString()} - ${message}`;
     }
 }
