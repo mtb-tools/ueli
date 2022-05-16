@@ -21,8 +21,11 @@ jobs:
             - name: Install dependencies
               run: yarn install
 
-            - name: Lint TypeScript and Vue files
+            - name: Lint TypeScript files
               run: yarn lint
+
+            - name: Typecheck TypeScript files
+              run: yarn typecheck
 
             - name: Run tests
               run: yarn test
