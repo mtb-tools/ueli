@@ -2,18 +2,15 @@ import { OperatingSystem } from "./OperatingSystem";
 
 export class OperatingSystemHelper {
     public static getOperatingSystem(platform: string): OperatingSystem {
-        switch (platform) {
-            case "win32":
-                return OperatingSystem.Windows;
+        const map: Record<string, OperatingSystem> = {
+            win32: OperatingSystem.Windows,
+            darwin: OperatingSystem.macOS,
+        };
 
-            case "darwin":
-                return OperatingSystem.macOS;
-
-            case "linux":
-                return OperatingSystem.Linux;
-
-            default:
-                throw new Error(`Unsupported platform: ${platform}`);
+        if (map[platform]) {
+            return map[platform];
         }
+
+        throw new Error(`Unsupported platform: ${platform}`);
     }
 }

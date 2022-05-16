@@ -2,17 +2,11 @@ import { OperatingSystem } from "./OperatingSystem";
 import { OperatingSystemHelper } from "./OperatingSystemHelper";
 
 describe(OperatingSystemHelper, () => {
-    it("should return Windows on win32 platform", () => {
-        expect(OperatingSystemHelper.getOperatingSystem("win32")).toBe(OperatingSystem.Windows);
-    });
+    it("should return Windows on win32 platform", () =>
+        expect(OperatingSystemHelper.getOperatingSystem("win32")).toBe(OperatingSystem.Windows));
 
-    it("should return macOS on darwin platform", () => {
-        expect(OperatingSystemHelper.getOperatingSystem("darwin")).toBe(OperatingSystem.macOS);
-    });
-
-    it("should return Linux on linux platform", () => {
-        expect(OperatingSystemHelper.getOperatingSystem("linux")).toBe(OperatingSystem.Linux);
-    });
+    it("should return macOS on darwin platform", () =>
+        expect(OperatingSystemHelper.getOperatingSystem("darwin")).toBe(OperatingSystem.macOS));
 
     it("should throw an error on an unexpected platform", () => {
         const unexpectedPlatforms = [
@@ -26,6 +20,7 @@ describe(OperatingSystemHelper, () => {
             "MAC",
             "MACOS",
             "OSX",
+            "linux",
             "LINUX",
             "ubuntu",
             "whatever",

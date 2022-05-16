@@ -55,7 +55,6 @@ export class MainApplication {
     private appendCommandlineSwitches(): void {
         const operatingSystemSpecificCommandlineSwitches: Record<OperatingSystem, string[]> = {
             Windows: ["wm-window-animations-disabled"],
-            Linux: [],
             macOS: [],
         };
 

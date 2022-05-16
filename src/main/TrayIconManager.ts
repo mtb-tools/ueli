@@ -6,8 +6,8 @@ import { ExecutionContext } from "./ExecutionContext";
 import { TrayIconEvent } from "./TrayIconEvent";
 
 export class TrayIconManager {
-    private readonly trayIconFilePath = {
-        windows: join(__dirname, "..", "assets", "trayicon", "icon-transparent.ico"),
+    private readonly trayIconFilePaths: Record<OperatingSystem, string> = {
+        Windows: join(__dirname, "..", "assets", "trayicon", "icon-transparent.ico"),
         macOS: join(__dirname, "..", "assets", "trayicon", "ueliTemplate.png"),
     };
 
@@ -18,7 +18,7 @@ export class TrayIconManager {
     }
 
     public createTrayIcon(): void {
-        this.trayIcon = new Tray(this.getTrayIconPath());
+        this.trayIcon = new Tray(this.trayIconFilePaths[this.executionContext.operatingSystem]);
         this.trayIcon.setToolTip("ueli");
         this.trayIcon.setContextMenu(this.getContextMenu());
     }
@@ -50,20 +50,5 @@ export class TrayIconManager {
 
     private emitTrayIconEvent(event: TrayIconEvent): void {
         this.ipcMain.emit(IpcChannel.TrayIconEvent, undefined, event);
-    }
-
-    private getTrayIconPath(): string {
-        switch (this.executionContext.operatingSystem) {
-            case OperatingSystem.Windows:
-                return this.trayIconFilePath.windows;
-
-            case OperatingSystem.macOS:
-                return this.trayIconFilePath.macOS;
-
-            default:
-                throw new Error(
-                    `Failed to create tray icon. Reason: unsupported operating system: ${this.executionContext.operatingSystem}`
-                );
-        }
     }
 }
