@@ -5,6 +5,7 @@ directories:
 files:
     - bundle/**/*.js
     - views/**/*.html
+    - assets/**/*
 
 win:
     icon: build/app-icon.ico
