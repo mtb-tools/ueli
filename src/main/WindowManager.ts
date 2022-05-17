@@ -48,11 +48,6 @@ export class WindowManager {
         this.settingsWindow = new BrowserWindow(WindowManager.mergeWindowConstructorOptionsWithDefault({}));
         this.settingsWindow.setMenuBarVisibility(false);
         await this.settingsWindow.loadFile(WindowManager.settingsHtmlFilePath);
-
-        this.settingsWindow.webContents.on("did-fail-load", (event) => {
-            event.preventDefault();
-            this.settingsWindow?.loadFile(WindowManager.settingsHtmlFilePath);
-        });
     }
 
     public toggleMainWindow(): void {
