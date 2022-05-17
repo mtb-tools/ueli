@@ -1,5 +1,8 @@
 import { createTheme, Theme } from "@fluentui/react";
 
+export const getColorTheme = (colorThemeName: string): Theme =>
+    UeliColorThemes[colorThemeName] ?? UeliColorThemes["UeliDark"];
+
 export const UeliColorThemes: Record<string, Theme> = {
     UeliDark: createTheme({
         palette: {

@@ -1,6 +1,6 @@
 import { basename, extname } from "path";
-import { LocalFilePathSearchResultItemIcon } from "../../../common/SearchResult/LocalFilePathSearchResultItemIcon";
 import { SearchResultItem } from "../../../common/SearchResult/SearchResultItem";
+import { SearchResultItemIconType } from "../../../common/SearchResult/SearchResultItemIconType";
 import { Searchable } from "../../Core/Searchable";
 import { FilePathExecutor } from "../../Executors/FilePathExecutor";
 import { FilePathLocationOpener } from "../../LocationOpeners/FilePathLocationOpener";
@@ -13,7 +13,10 @@ export class MacOsApplication implements Searchable {
             description: this.filePath,
             executionArgument: this.filePath,
             executorId: FilePathExecutor.executorId,
-            icon: new LocalFilePathSearchResultItemIcon(this.iconFilePath),
+            icon: {
+                icon: this.iconFilePath,
+                type: SearchResultItemIconType.FilePath,
+            },
             locationOpenerId: FilePathLocationOpener.locationOpenerId,
             name: basename(this.filePath, extname(this.filePath)),
             openLocationArgument: this.filePath,

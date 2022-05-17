@@ -1,5 +1,5 @@
-import { DummySearchResultItemIcon } from "./DummySearchResultItemIcon";
 import { SearchResultItem } from "./SearchResultItem";
+import { SearchResultItemIconType } from "./SearchResultItemIconType";
 
 export class SearchResultItemDummy {
     public static empty({
@@ -15,7 +15,7 @@ export class SearchResultItemDummy {
             description,
             executionArgument,
             executorId,
-            icon: new DummySearchResultItemIcon(icon),
+            icon: { icon, type: SearchResultItemIconType.Dummy },
             locationOpenerId,
             name,
             openLocationArgument,

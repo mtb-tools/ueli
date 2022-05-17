@@ -1,6 +1,6 @@
 import { basename } from "path";
-import { DataUrlSearchResultItemIcon } from "../../../common/SearchResult/DataUrlSearchResultItemIcon";
 import { SearchResultItem } from "../../../common/SearchResult/SearchResultItem";
+import { SearchResultItemIconType } from "../../../common/SearchResult/SearchResultItemIconType";
 import { Searchable } from "../../Core/Searchable";
 import { FilePathExecutor } from "../../Executors/FilePathExecutor";
 import { FilePathLocationOpener } from "../../LocationOpeners/FilePathLocationOpener";
@@ -13,7 +13,10 @@ export class SimpleFolderSearchResultItem implements Searchable {
             description: this.filePath,
             executionArgument: this.filePath,
             executorId: FilePathExecutor.executorId,
-            icon: new DataUrlSearchResultItemIcon(this.imageDataUrl),
+            icon: {
+                icon: this.imageDataUrl,
+                type: SearchResultItemIconType.DataUrl,
+            },
             locationOpenerId: FilePathLocationOpener.locationOpenerId,
             name: basename(this.filePath),
             openLocationArgument: this.filePath,

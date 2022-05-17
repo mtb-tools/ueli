@@ -157,7 +157,10 @@ export class MainApplication {
             QuitClicked: () => this.quitApp(),
             RescanClicked: () => this.rescan(),
             SettingsClicked: () => this.windowManager.showSettingsWindow(),
-            ShowClicked: () => this.windowManager.showMainWindow(),
+            ShowClicked: () => {
+                this.windowManager.showMainWindow();
+                return Promise.resolve();
+            },
         };
 
         return trayIconEventHandlers[event]();
@@ -175,6 +178,7 @@ export class MainApplication {
 
     private async updateSettings(updatedSettings: Settings): Promise<void> {
         await this.searchEngine.updateSettings(updatedSettings.searchEngineSettings);
+        this.windowManager.sendMessageToAllWindows(IpcChannel.SettingsUpdated, updatedSettings);
         return this.settingsManager.updateSettings(updatedSettings);
     }
 }

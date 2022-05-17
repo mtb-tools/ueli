@@ -34,7 +34,7 @@ export const SearchEngineSettings: FC = () => {
     };
 
     return (
-        <Stack horizontal={false} tokens={{ childrenGap: 20, padding: 20 }}>
+        <Stack tokens={{ childrenGap: 20, padding: 20 }}>
             <StackItem>
                 <Slider
                     label="Threshold"

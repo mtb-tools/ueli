@@ -24,7 +24,7 @@ export const AppearanceSettings: FC<AppearanceSettingsProps> = ({ colorTheme, on
     };
 
     return (
-        <Stack horizontal={false} tokens={{ childrenGap: 20, padding: 20 }}>
+        <Stack tokens={{ childrenGap: 20, padding: 20 }}>
             <StackItem>
                 <Dropdown
                     label="Color Theme"

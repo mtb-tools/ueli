@@ -1,5 +1,5 @@
-import { LocalFilePathSearchResultItemIcon } from "../../../common/SearchResult/LocalFilePathSearchResultItemIcon";
 import { SearchResultItem } from "../../../common/SearchResult/SearchResultItem";
+import { SearchResultItemIconType } from "../../../common/SearchResult/SearchResultItemIconType";
 import { FilePathExecutor } from "../../Executors/FilePathExecutor";
 import { FilePathLocationOpener } from "../../LocationOpeners/FilePathLocationOpener";
 import { WindowsApplication } from "./WindowsApplication";
@@ -17,7 +17,10 @@ describe(WindowsApplication, () => {
                 description: "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Spotify.lnk",
                 executionArgument: "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Spotify.lnk",
                 executorId: FilePathExecutor.executorId,
-                icon: new LocalFilePathSearchResultItemIcon("C:\\Path\\To\\Icon.png"),
+                icon: {
+                    icon: "C:\\Path\\To\\Icon.png",
+                    type: SearchResultItemIconType.FilePath,
+                },
                 locationOpenerId: FilePathLocationOpener.locationOpenerId,
                 name: "Spotify",
                 openLocationArgument: "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Spotify.lnk",

@@ -1,5 +1,5 @@
-import { LocalFilePathSearchResultItemIcon } from "../../../common/SearchResult/LocalFilePathSearchResultItemIcon";
 import { SearchResultItem } from "../../../common/SearchResult/SearchResultItem";
+import { SearchResultItemIconType } from "../../../common/SearchResult/SearchResultItemIconType";
 import { FilePathExecutor } from "../../Executors/FilePathExecutor";
 import { FilePathLocationOpener } from "../../LocationOpeners/FilePathLocationOpener";
 import { MacOsApplication } from "./MacOsApplication";
@@ -13,7 +13,10 @@ describe(MacOsApplication, () => {
                 description: "/Application/Spotify.app",
                 executionArgument: "/Application/Spotify.app",
                 executorId: FilePathExecutor.executorId,
-                icon: new LocalFilePathSearchResultItemIcon("/path/to/icon.png"),
+                icon: {
+                    icon: "/path/to/icon.png",
+                    type: SearchResultItemIconType.FilePath,
+                },
                 locationOpenerId: FilePathLocationOpener.locationOpenerId,
                 name: "Spotify",
                 openLocationArgument: "/Application/Spotify.app",
