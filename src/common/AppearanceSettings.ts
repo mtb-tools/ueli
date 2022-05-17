@@ -1,3 +1,3 @@
 export interface AppearanceSettings {
-    colorTheme: string;
+    colorThemeName: string;
 }

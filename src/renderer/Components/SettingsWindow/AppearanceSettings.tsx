@@ -17,9 +17,9 @@ export const AppearanceSettings: FC<AppearanceSettingsProps> = ({ colorTheme, on
         { key: "WindowsLight", text: "Windows Light" },
     ];
 
-    const changeColorTheme = async (updatedValue: string) => {
-        settings.appearanceSettings.colorTheme = updatedValue;
-        onColorThemeChanged(settings.appearanceSettings.colorTheme);
+    const changeColorThemeName = async (updatedColorThemeName: string) => {
+        settings.appearanceSettings.colorThemeName = updatedColorThemeName;
+        onColorThemeChanged(settings.appearanceSettings.colorThemeName);
         await saveSettings(settings);
     };
 
@@ -32,7 +32,7 @@ export const AppearanceSettings: FC<AppearanceSettingsProps> = ({ colorTheme, on
                     selectedKey={colorTheme}
                     onChange={(_, option) => {
                         if (option) {
-                            changeColorTheme(option.key.toString());
+                            changeColorThemeName(option.key.toString());
                         }
                     }}
                 />

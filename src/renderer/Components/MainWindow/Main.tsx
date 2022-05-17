@@ -19,11 +19,11 @@ export const Main: FC = () => {
     const searchBoxRef = useRef<ISearchBox>(null);
     const [searchResultItems, setSearchResultItems] = useState<SearchResultItem[]>([]);
     const [selectedIndex, setSelectedIndex] = useState<number>(0);
-    const [colorThemeName, setColorTheme] = useState<string>(getSettings().appearanceSettings.colorTheme);
+    const [colorThemeName, setColorTheme] = useState<string>(getSettings().appearanceSettings.colorThemeName);
 
     const registerIpcEventListeners = () => {
         window.Bridge.ipcRenderer.on<Settings>(IpcChannel.SettingsUpdated, (_, { appearanceSettings }) =>
-            setColorTheme(appearanceSettings.colorTheme)
+            setColorTheme(appearanceSettings.colorThemeName)
         );
 
         window.Bridge.ipcRenderer.on(IpcChannel.MainWindowShown, () => searchBoxRef?.current?.focus());

@@ -12,7 +12,7 @@ import { getSettings } from "../../Actions";
 initializeIcons();
 
 export const Settings: FC = () => {
-    const [colorThemeName, setColorThemeName] = useState<string>(getSettings().appearanceSettings.colorTheme);
+    const [colorThemeName, setColorThemeName] = useState<string>(getSettings().appearanceSettings.colorThemeName);
 
     return (
         <ThemeProvider theme={getColorTheme(colorThemeName)} style={{ height: "100vh" }}>
