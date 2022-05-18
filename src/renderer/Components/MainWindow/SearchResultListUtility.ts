@@ -11,9 +11,9 @@ const incrementValueMap: Record<NavigationDirection, number> = {
 export const calculateSelectedIndex = (
     currentSelectedIndex: number,
     numberOfItems: number,
-    direction: NavigationDirection
+    navigationDirection: NavigationDirection
 ): number => {
-    const nextSelectedValue = currentSelectedIndex + incrementValueMap[direction];
+    const nextSelectedValue = currentSelectedIndex + incrementValueMap[navigationDirection];
 
     if (nextSelectedValue >= numberOfItems) {
         return 0;
