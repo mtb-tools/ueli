@@ -2,7 +2,7 @@ import { initializeIcons, ISearchBox, SearchBox, Stack, StackItem, ThemeProvider
 import { FC, useEffect, useState, KeyboardEvent, useRef } from "react";
 import { IpcChannel } from "../../../common/IpcChannel";
 import { SearchResultItem } from "../../../common/SearchResult/SearchResultItem";
-import { Settings } from "../../../common/Settings";
+import { Settings } from "../../../common/Settings/Settings";
 import { getSettings } from "../../Actions";
 import { getColorTheme } from "../../ColorTheme/UeliColorThemes";
 import { SearchResultList } from "./SearchResultList";

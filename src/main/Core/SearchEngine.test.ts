@@ -1,6 +1,6 @@
 import { join } from "path";
 import { TestLogger } from "../../common/Logger/TestLogger";
-import { SearchEngineSettings } from "../../common/SearchEngineSettings";
+import { SearchEngineSettings } from "../../common/Settings/SearchEngineSettings";
 import { SearchResultItemDummy } from "../../common/SearchResult/SearchResultItemDummy";
 import { DummySearchPlugin } from "../Plugins/DummySearchPlugin/DummySearchPlugin";
 import { FileSystemUtility } from "../Utilities/FileSystemUtility";

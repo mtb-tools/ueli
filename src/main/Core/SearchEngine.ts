@@ -1,6 +1,6 @@
 import Fuse from "fuse.js";
 import { Logger } from "../../common/Logger/Logger";
-import { SearchEngineSettings } from "../../common/SearchEngineSettings";
+import { SearchEngineSettings } from "../../common/Settings/SearchEngineSettings";
 import { SearchResultItem } from "../../common/SearchResult/SearchResultItem";
 import { SearchPlugin } from "../Plugins/SearchPlugin";
 import { Searchable } from "./Searchable";

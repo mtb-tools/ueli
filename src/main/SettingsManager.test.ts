@@ -1,5 +1,5 @@
 import { ConsoleLogger } from "../common/Logger/ConsoleLogger";
-import { Settings } from "../common/Settings";
+import { Settings } from "../common/Settings/Settings";
 import { DummySettingsRepository } from "./DummySettingsRepository";
 import { SettingsManager } from "./SettingsManager";
 

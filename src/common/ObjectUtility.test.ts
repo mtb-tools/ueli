@@ -1,5 +1,5 @@
 import { ObjectUtility } from "./ObjectUtility";
-import { Settings } from "./Settings";
+import { Settings } from "./Settings/Settings";
 
 describe(ObjectUtility, () => {
     describe(ObjectUtility.clone, () => {

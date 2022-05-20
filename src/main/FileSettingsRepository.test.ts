@@ -1,5 +1,5 @@
 import { join } from "path";
-import { Settings } from "../common/Settings";
+import { Settings } from "../common/Settings/Settings";
 import { FileSettingsRepository } from "./FileSettingsRepository";
 import { FileSystemUtility } from "./Utilities/FileSystemUtility";
 

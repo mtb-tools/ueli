@@ -1,4 +1,4 @@
-import { Settings } from "../common/Settings";
+import { Settings } from "../common/Settings/Settings";
 
 export const defaultSettings: Settings = {
     generalSettings: {

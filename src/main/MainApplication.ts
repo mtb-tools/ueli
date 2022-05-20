@@ -4,7 +4,7 @@ import { IpcChannel } from "../common/IpcChannel";
 import { Logger } from "../common/Logger/Logger";
 import { OperatingSystem } from "../common/OperatingSystem/OperatingSystem";
 import { SearchResultItem } from "../common/SearchResult/SearchResultItem";
-import { Settings } from "../common/Settings";
+import { Settings } from "../common/Settings/Settings";
 import { ExecutionService } from "./Core/ExecutionService";
 import { LocationOpeningService } from "./Core/LocationOpeningService";
 import { SearchEngine } from "./Core/SearchEngine";
