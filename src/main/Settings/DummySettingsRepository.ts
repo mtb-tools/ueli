@@ -1,4 +1,4 @@
-import { Settings } from "../common/Settings/Settings";
+import { Settings } from "../../common/Settings/Settings";
 import { SettingsRepository } from "./SettingsRepository";
 
 export class DummySettingsRepository implements SettingsRepository {

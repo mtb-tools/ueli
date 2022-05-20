@@ -3,7 +3,7 @@ import { BrowserWindowConstructorOptions } from "electron/main";
 import { join } from "path";
 import { IpcChannel } from "../common/IpcChannel";
 import { ObjectUtility } from "../common/ObjectUtility";
-import { SettingsManager } from "./SettingsManager";
+import { SettingsManager } from "./Settings/SettingsManager";
 
 export class WindowManager {
     private static readonly mainHtmlFilePath = join(__dirname, "..", "views", "main.html");

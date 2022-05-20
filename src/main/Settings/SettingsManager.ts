@@ -1,6 +1,6 @@
-import { Logger } from "../common/Logger/Logger";
-import { ObjectUtility } from "../common/ObjectUtility";
-import { Settings } from "../common/Settings/Settings";
+import { Logger } from "../../common/Logger/Logger";
+import { ObjectUtility } from "../../common/ObjectUtility";
+import { Settings } from "../../common/Settings/Settings";
 import { SettingsFactory } from "./SettingsFactory";
 import { SettingsRepository } from "./SettingsRepository";
 

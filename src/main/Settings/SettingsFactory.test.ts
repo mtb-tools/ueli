@@ -1,4 +1,4 @@
-import { Settings } from "../common/Settings/Settings";
+import { Settings } from "../../common/Settings/Settings";
 import { SettingsFactory } from "./SettingsFactory";
 
 describe(SettingsFactory, () => {

@@ -7,16 +7,16 @@ import { OperatingSystemHelper } from "../common/OperatingSystem/OperatingSystem
 import { ExecutionService } from "./Core/ExecutionService";
 import { LocationOpeningService } from "./Core/LocationOpeningService";
 import { SearchEngine } from "./Core/SearchEngine";
-import { defaultSettings } from "./DefaultSettings";
+import { defaultSettings } from "./Settings/DefaultSettings";
 import { ExecutionContextFactory } from "./ExecutionContextFactory";
 import { FilePathExecutor } from "./Executors/FilePathExecutor";
 import { UeliCommandExecutor } from "./Executors/UeliCommandExecutor";
-import { FileSettingsRepository } from "./FileSettingsRepository";
+import { FileSettingsRepository } from "./Settings/FileSettingsRepository";
 import { FilePathLocationOpener } from "./LocationOpeners/FilePathLocationOpener";
 import { MainApplication } from "./MainApplication";
 import { MacOsPluginRepository } from "./PluginRepository/MacOsPluginRepository";
 import { WindowsPluginRepository } from "./PluginRepository/WindowsPluginRepository";
-import { SettingsManager } from "./SettingsManager";
+import { SettingsManager } from "./Settings/SettingsManager";
 import { TrayIconManager } from "./TrayIconManager";
 import { WindowManager } from "./WindowManager";
 

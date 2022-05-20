@@ -9,7 +9,7 @@ import { ExecutionService } from "./Core/ExecutionService";
 import { LocationOpeningService } from "./Core/LocationOpeningService";
 import { SearchEngine } from "./Core/SearchEngine";
 import { ExecutionContext } from "./ExecutionContext";
-import { SettingsManager } from "./SettingsManager";
+import { SettingsManager } from "./Settings/SettingsManager";
 import { TrayIconEvent } from "./TrayIconEvent";
 import { TrayIconManager } from "./TrayIconManager";
 import { UeliCommandEvent } from "./UeliCommandEvent";
