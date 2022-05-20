@@ -1,5 +1,5 @@
-import { initializeIcons, ISearchBox, SearchBox, Stack, StackItem, ThemeProvider } from "@fluentui/react";
-import { FC, useEffect, useState, KeyboardEvent, useRef } from "react";
+import { initializeIcons, Stack, StackItem, ThemeProvider } from "@fluentui/react";
+import { FC, useEffect, useState, KeyboardEvent } from "react";
 import { IpcChannel } from "../../../common/IpcChannel";
 import { SearchResultItem } from "../../../common/SearchResult/SearchResultItem";
 import { Settings } from "../../../common/Settings/Settings";
@@ -7,6 +7,7 @@ import { getSettings } from "../../Actions";
 import { getColorTheme } from "../../ColorTheme/UeliColorThemes";
 import { SearchResultList } from "./SearchResultList";
 import { calculateSelectedIndex, NavigationDirection } from "./SearchResultListUtility";
+import { UserInput } from "./UserInput";
 
 initializeIcons();
 
@@ -16,7 +17,6 @@ const navigationDirectionMap: Record<"ArrowUp" | "ArrowDown", NavigationDirectio
 };
 
 export const Main: FC = () => {
-    const searchBoxRef = useRef<ISearchBox>(null);
     const [searchResultItems, setSearchResultItems] = useState<SearchResultItem[]>([]);
     const [selectedIndex, setSelectedIndex] = useState<number>(0);
     const [colorThemeName, setColorTheme] = useState<string>(getSettings().appearanceSettings.colorThemeName);
@@ -25,8 +25,6 @@ export const Main: FC = () => {
         window.Bridge.ipcRenderer.on<Settings>(IpcChannel.SettingsUpdated, (_, { appearanceSettings }) =>
             setColorTheme(appearanceSettings.colorThemeName)
         );
-
-        window.Bridge.ipcRenderer.on(IpcChannel.MainWindowShown, () => searchBoxRef?.current?.focus());
     };
 
     const search = async (searchTerm: string) => {
@@ -44,7 +42,7 @@ export const Main: FC = () => {
         return window.Bridge.ipcRenderer.invoke<SearchResultItem, void>(ipcChannel, searchResultItem);
     };
 
-    const handleKeyPress = async (event: KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyPress = async (event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         if (event.key === "ArrowUp" || event.key === "ArrowDown") {
             const nextSelectedIndex = calculateSelectedIndex(
                 selectedIndex,
@@ -66,14 +64,7 @@ export const Main: FC = () => {
         <ThemeProvider theme={getColorTheme(colorThemeName)} style={{ height: "100vh" }}>
             <Stack verticalFill>
                 <StackItem tokens={{ padding: 10 }}>
-                    <SearchBox
-                        autoFocus
-                        underlined
-                        componentRef={searchBoxRef}
-                        placeholder="Type in your search term"
-                        onChange={(_, searchTerm) => search(searchTerm ?? "")}
-                        onKeyUp={(event) => handleKeyPress(event)}
-                    />
+                    <UserInput onSearchTermChanged={search} onKeyUp={handleKeyPress} />
                 </StackItem>
                 <StackItem grow tokens={{ padding: 10 }} styles={{ root: { overflowY: "auto" } }}>
                     <SearchResultList
