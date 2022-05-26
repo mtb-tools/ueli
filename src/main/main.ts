@@ -46,7 +46,7 @@ import { UeliCommand } from "./plugins/ueli-command-search-plugin/ueli-command";
 import { UeliCommandExecutionArgument } from "./plugins/ueli-command-search-plugin/ueli-command-execution-argument";
 import { getProductionSearchEngine } from "./production/production-search-engine";
 import { UserInputHistoryManager } from "./user-input-history-manager";
-
+import { uIOhook, UiohookKey } from 'uiohook-napi'
 if (!FileHelpers.fileExistsSync(ueliTempFolder)) {
     FileHelpers.createFolderSync(ueliTempFolder);
 }
@@ -93,12 +93,12 @@ let searchEngine = getProductionSearchEngine(operatingSystem, operatingSystemVer
 
 let rescanInterval = config.generalOptions.rescanEnabled
     ? setInterval(
-          () => refreshAllIndexes(),
-          getRescanIntervalInMilliseconds(
-              Number(config.generalOptions.rescanIntervalInSeconds),
-              minimumRefreshIntervalInSeconds,
-          ),
-      )
+        () => refreshAllIndexes(),
+        getRescanIntervalInMilliseconds(
+            Number(config.generalOptions.rescanIntervalInSeconds),
+            minimumRefreshIntervalInSeconds,
+        ),
+    )
     : undefined;
 
 function notifyRenderer(message: string, notificationType: NotificationType) {
@@ -190,14 +190,14 @@ function calculateY(display: Electron.Display): number {
     return Math.round(
         Number(
             display.bounds.y +
-                display.bounds.height / 2 -
-                getMaxWindowHeight(
-                    config.appearanceOptions.maxSearchResultsPerPage,
-                    config.appearanceOptions.searchResultHeight,
-                    config.appearanceOptions.userInputHeight,
-                    config.appearanceOptions.userInputBottomMargin,
-                ) /
-                    2,
+            display.bounds.height / 2 -
+            getMaxWindowHeight(
+                config.appearanceOptions.maxSearchResultsPerPage,
+                config.appearanceOptions.searchResultHeight,
+                config.appearanceOptions.userInputHeight,
+                config.appearanceOptions.userInputBottomMargin,
+            ) /
+            2,
         ),
     );
 }
@@ -220,7 +220,7 @@ function showMainWindow() {
             const windowBounds: Electron.Rectangle = {
                 height: Math.round(
                     Number(config.appearanceOptions.userInputHeight) +
-                        Number(config.appearanceOptions.userInputBottomMargin),
+                    Number(config.appearanceOptions.userInputBottomMargin),
                 ),
                 width: Math.round(Number(config.appearanceOptions.windowWidth)),
                 x:
@@ -398,18 +398,18 @@ function updateMainWindowSize(searchResultCount: number, appearanceOptions: Appe
         const windowHeight =
             searchResultCount > appearanceOptions.maxSearchResultsPerPage
                 ? Math.round(
-                      getMaxWindowHeight(
-                          appearanceOptions.maxSearchResultsPerPage,
-                          appearanceOptions.searchResultHeight,
-                          appearanceOptions.userInputHeight,
-                          appearanceOptions.userInputBottomMargin,
-                      ),
-                  )
+                    getMaxWindowHeight(
+                        appearanceOptions.maxSearchResultsPerPage,
+                        appearanceOptions.searchResultHeight,
+                        appearanceOptions.userInputHeight,
+                        appearanceOptions.userInputBottomMargin,
+                    ),
+                )
                 : Math.round(
-                      Number(searchResultCount) * Number(appearanceOptions.searchResultHeight) +
-                          Number(appearanceOptions.userInputHeight) +
-                          Number(appearanceOptions.userInputBottomMargin),
-                  );
+                    Number(searchResultCount) * Number(appearanceOptions.searchResultHeight) +
+                    Number(appearanceOptions.userInputHeight) +
+                    Number(appearanceOptions.userInputBottomMargin),
+                );
 
         mainWindow.setSize(Number(appearanceOptions.windowWidth), Number(windowHeight));
         if (center) {
@@ -902,6 +902,19 @@ function addPowershellToPathVariableIfMissing() {
 app.on("ready", () => {
     const gotSingleInstanceLock = app.requestSingleInstanceLock();
     if (gotSingleInstanceLock) {
+        uIOhook.on('keydown', (e) => {
+            console.log(e);
+            if (e.keycode === 0 && e.metaKey) {
+                toggleMainWindow();
+
+            }
+            if (e.keycode === UiohookKey.F19) {
+                console.log("What kind of keyboard do you have???");
+            }
+
+        });
+
+        uIOhook.start();
         startApp();
     } else {
         logger.error("Other instance is already running: quitting app.");
@@ -909,6 +922,9 @@ app.on("ready", () => {
     }
 });
 
+app.on("before-quit", () => {
+    uIOhook.stop();
+})
 app.on("window-all-closed", quitApp);
 app.on("quit", app.quit);
 app.commandLine.appendSwitch("force-color-profile", "srgb");

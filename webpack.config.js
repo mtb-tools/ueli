@@ -27,6 +27,7 @@ const mainConfig = {
     node: false,
     devtool,
     externals: {
+        'uiohook-napi': 'commonjs uiohook-napi',
         sqlite3: "commonjs sqlite3",
     },
 };
@@ -56,6 +57,7 @@ const rendererConfig = {
     node: false,
     devtool,
     externals: {
+        'uiohook-napi': 'commonjs uiohook-napi',
         sqlite3: "commonjs sqlite3",
     },
 };

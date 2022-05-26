@@ -27,15 +27,23 @@
     ],
     "main": "./bundle/main.js",
     "scripts": {
-        "lint": "./node_modules/.bin/eslint \"src/**/*{ts,vue}\"",
-        "bundle": "./node_modules/.bin/webpack --config webpack.config.js",
-        "start": "./node_modules/.bin/electron . --remote-debugging-port=9223",
-        "test": "./node_modules/.bin/jest --config jest.json --silent .",
-        "package:dir": "./node_modules/.bin/electron-builder --dir --config electron-builder-config.yml --publish never",
-        "package": "./node_modules/.bin/electron-builder --config electron-builder-config.yml --publish never",
-        "package:publish": "./node_modules/.bin/electron-builder --config electron-builder-config.yml --publish always"
+        "lint": "eslint \"src/**/*{ts,vue}\"",
+        "bundle": "webpack --config webpack.config.js",
+        "start": "electron-forge start",
+        "test": "jest --config jest.json --silent .",
+        "package:dir": "electron-builder --dir --config electron-builder-config.yml --publish never",
+        "package": "electron-forge package",
+        "package:publish": "electron-builder --config electron-builder-config.yml --publish always",
+        "prepackage": "yarn bundle",
+        "prestart": "yarn bundle",
+        "make": "electron-forge make"
     },
     "devDependencies": {
+        "@electron-forge/cli": "^6.0.0-beta.63",
+        "@electron-forge/maker-deb": "^6.0.0-beta.63",
+        "@electron-forge/maker-rpm": "^6.0.0-beta.63",
+        "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
+        "@electron-forge/maker-zip": "^6.0.0-beta.63",
         "@types/color": "^3.0.0",
         "@types/ini": "^1.3.30",
         "@types/jest": "^27.4.1",
@@ -48,7 +56,6 @@
         "axios": "^0.26.1",
         "color": "^4.0.1",
         "electron": "^18.2.3",
-        "electron-builder": "^23.0.4",
         "electron-store": "^8.0.1",
         "electron-updater": "^5.0.1",
         "eslint": "^8.11.0",
@@ -72,8 +79,37 @@
         "@fortawesome/fontawesome-free": "^5.14.0",
         "bulma": "^0.9.4",
         "bulma-extensions": "^6.2.7",
+        "electron-squirrel-startup": "^1.0.0",
         "ini": "^3.0.0",
         "sqlite": "^4.1.1",
-        "sqlite3": "^5.0.8"
+        "sqlite3": "^5.0.8",
+        "uiohook-napi": "^1.1.0"
+    },
+    "config": {
+        "forge": {
+            "packagerConfig": {},
+            "makers": [
+                {
+                    "name": "@electron-forge/maker-squirrel",
+                    "config": {
+                        "name": "ueli"
+                    }
+                },
+                {
+                    "name": "@electron-forge/maker-zip",
+                    "platforms": [
+                        "darwin"
+                    ]
+                },
+                {
+                    "name": "@electron-forge/maker-deb",
+                    "config": {}
+                },
+                {
+                    "name": "@electron-forge/maker-rpm",
+                    "config": {}
+                }
+            ]
+        }
     }
 }
